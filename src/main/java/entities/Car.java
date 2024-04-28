@@ -1,10 +1,13 @@
 package entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -37,6 +40,11 @@ public class Car
     @Column(name = "description", nullable = true, length = 500)
     private String description;
 
+
+    @OneToMany(mappedBy = "car_id",cascade = CascadeType.MERGE)
+    //"mappedBy = "car_id"" indica che la relazione è mappata tramite l'attributo "car_id" nella classe Product.
+    @JsonIgnore
+    private List<Product> products;
 
 
 
