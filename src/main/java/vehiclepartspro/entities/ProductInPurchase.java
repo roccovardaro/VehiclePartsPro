@@ -1,4 +1,4 @@
-package entities;
+package vehiclepartspro.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

@@ -1,4 +1,4 @@
-package entities;
+package vehiclepartspro.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -22,7 +22,7 @@ public class User {
     private int id;
 
     @Basic
-    @Column(name = "code", nullable = true, length = 70)
+    @Column(name = "code", nullable = true, length = 70,unique = true)
     private String code;
 
     @Basic

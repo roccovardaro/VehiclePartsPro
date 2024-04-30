@@ -1,4 +1,4 @@
-package entities;
+package vehiclepartspro.entities;
 
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
