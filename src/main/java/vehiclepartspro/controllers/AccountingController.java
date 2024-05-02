@@ -8,24 +8,30 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import vehiclepartspro.services.UserService;
+import vehiclepartspro.services.AccountingService;
+import vehiclepartspro.support.exception.FiscalCodeUserExistsException;
 
 @RestController
 @RequestMapping("/users")
-public class UserController
+public class AccountingController
 {
 
     @Autowired
-    private UserService userService;
+    private AccountingService accountingService;
 
     @PostMapping("/save")
-    public ResponseEntity<String> saveUser(@RequestBody User user)
+    public ResponseEntity saveUser(@RequestBody User user)
     {
-        boolean insert= userService.UserSave(user);
-        if(insert)
+        try
         {
-            return new ResponseEntity<String>("USER_INSERTED", HttpStatus.OK);
+            User added= accountingService.UserSave(user);
+            return new ResponseEntity<>(added, HttpStatus.OK);
+
         }
-        return new ResponseEntity<String>("USER_NOT_INSERTED", HttpStatus.OK);
+        catch (FiscalCodeUserExistsException f)
+        {
+            return new ResponseEntity<>("ERROR_FISCAL_CODE_ALREADY_EXISTS", HttpStatus.BAD_REQUEST);
+        }
+
     }
 }
