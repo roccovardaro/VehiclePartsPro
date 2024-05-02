@@ -23,7 +23,7 @@ public class User {
 
     @Basic
     @Column(name = "fiscal_code", nullable = false, length = 70,unique = true)
-    private String fiscal_code;
+    private String fiscalCode;
 
     @Basic
     @Column(name = "first_name", nullable = true, length = 50)

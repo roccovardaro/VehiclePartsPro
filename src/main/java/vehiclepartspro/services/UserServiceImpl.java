@@ -15,8 +15,9 @@ public class UserServiceImpl implements UserService
     public boolean UserSave(User user)
     {
 
-        if(!UserExists(user.getFiscal_code()))
+        if(!UserExists(user.getFiscalCode()))
         {
+
             userRepository.save(user);
             return true;
         }
@@ -25,7 +26,7 @@ public class UserServiceImpl implements UserService
 
     @Override
     public boolean UserExists(String fiscal_code) {
-        return true;
+        return userRepository.existsByFiscalCode(fiscal_code);
     }
 
 }

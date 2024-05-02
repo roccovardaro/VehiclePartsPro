@@ -30,7 +30,7 @@ public class PurchaseServiceImpl implements PurchaseService
         //prendiamo il prodotto dal db
         Product p1= productRepository.findByBarCode(p.getBarCode());
         //prendiamo l'utente dal db
-        User u1= userRepository.findByFiscalCode(u.getFiscal_code());
+        User u1= userRepository.findByFiscalCode(u.getFiscalCode());
         //verifico che il prodotto sia disponibile con il codice del prodotto nel db e la quantità del prodotto
         //passato
         if(avaiableProduct(p1.getId(), p.getQuantity()))
