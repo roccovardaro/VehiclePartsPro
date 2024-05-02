@@ -12,7 +12,8 @@ import vehiclepartspro.services.UserService;
 
 @RestController
 @RequestMapping("/users")
-public class UserController {
+public class UserController
+{
 
     @Autowired
     private UserService userService;

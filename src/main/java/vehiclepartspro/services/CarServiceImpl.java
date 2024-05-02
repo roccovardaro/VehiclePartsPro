@@ -16,18 +16,14 @@ public class CarServiceImpl implements CarService
     private CarRepository carRepository;
 
     @Override
-    public List<Car> AllCarByBrand(String brand)
+    public List<Car> allCarByBrand(String brand)
     {
         //ripuliamo la stringa scrivendola in minuscolo con spazi bianchi
         String brand_ok= brand.trim().toUpperCase();
 
         List<Car> cars= carRepository.findCarByBrand(brand_ok);
-        if (cars.isEmpty())
-        {
-            return new ArrayList<>();
-        }
         return cars;
-    }
+        }
 
     @Override
     public List<Car> AllCarByBrandAndModel(String brand, String model) {

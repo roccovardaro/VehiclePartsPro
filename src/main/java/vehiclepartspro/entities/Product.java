@@ -28,7 +28,7 @@ public class Product
     private String name;
 
     @Basic
-    @Column(name = "bar_code", nullable = true, length = 70)
+    @Column(name = "bar_code", nullable = true,length = 100)
     private String barCode;
 
     @Basic
@@ -58,7 +58,6 @@ public class Product
     @JsonIgnore
     @ToString.Exclude
     private List<ProductInPurchase> productsInPurchase;
-
 
 
 }

@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import vehiclepartspro.entities.Car;
-import vehiclepartspro.repositories.CarRepository;
 import vehiclepartspro.services.CarService;
 
 import java.util.List;
@@ -20,18 +19,16 @@ public class CarController
 {
     @Autowired
     CarService carService;
-    @GetMapping()
-    public ResponseEntity<List<Car>> CarsByBrand(@RequestParam String brand)
+    @GetMapping("/brand")
+    public ResponseEntity<List<Car>> CarsByBrand(@RequestParam() String brand)
     {
-        List<Car> cars= carService.AllCarByBrand(brand);
+        List<Car> cars= carService.allCarByBrand(brand);
         return new ResponseEntity<>(cars, HttpStatus.OK);
     }
     @GetMapping("/all")
-    public ResponseEntity<List<Car>> AllCars()
+    public ResponseEntity<List<Car>> allCars()
     {
         List<Car> allCars = carService.AllCars();
-        return new ResponseEntity<List<Car>>(allCars, HttpStatus.OK);
+        return new ResponseEntity<>(allCars, HttpStatus.OK);
     }
-
-
 }
