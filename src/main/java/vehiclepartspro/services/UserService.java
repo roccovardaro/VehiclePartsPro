@@ -7,7 +7,7 @@ import vehiclepartspro.entities.User;
 public interface UserService
 {
     boolean UserSave(User user);
-    boolean UserExists(String firstName, String lastName);
+    boolean UserExists(String fiscal_code);
 
 
 }

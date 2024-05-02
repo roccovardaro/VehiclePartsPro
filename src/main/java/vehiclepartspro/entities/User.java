@@ -22,8 +22,8 @@ public class User {
     private int id;
 
     @Basic
-    @Column(name = "code", nullable = true, length = 70,unique = true)
-    private String code;
+    @Column(name = "fiscal_code", nullable = false, length = 70,unique = true)
+    private String fiscal_code;
 
     @Basic
     @Column(name = "first_name", nullable = true, length = 50)

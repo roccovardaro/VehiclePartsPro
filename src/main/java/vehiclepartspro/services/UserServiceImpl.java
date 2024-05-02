@@ -1,6 +1,5 @@
 package vehiclepartspro.services;
 
-import org.springframework.http.ResponseEntity;
 import vehiclepartspro.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,7 @@ public class UserServiceImpl implements UserService
     public boolean UserSave(User user)
     {
 
-        if(!UserExists(user.getFirstName(), user.getLastName()))
+        if(!UserExists(user.getFiscal_code()))
         {
             userRepository.save(user);
             return true;
@@ -25,8 +24,8 @@ public class UserServiceImpl implements UserService
     }
 
     @Override
-    public boolean UserExists(String firstName, String lastName)
-    {
-        return userRepository.existsByFirstNameAndLastName(firstName, lastName);
+    public boolean UserExists(String fiscal_code) {
+        return true;
     }
+
 }
