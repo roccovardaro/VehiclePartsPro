@@ -21,6 +21,7 @@ public class Car
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     @Column(name = "id", nullable = false)
     private int id;
 

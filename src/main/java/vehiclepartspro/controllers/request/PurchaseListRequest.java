@@ -19,6 +19,6 @@ public final class PurchaseListRequest
     }
     public List<Product> getProducts()
     {
-        return Collections.unmodifiableList(products);
+        return products;
     }
 }
