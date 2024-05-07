@@ -11,8 +11,9 @@ import vehiclepartspro.repositories.ProductInPurchaseRepository;
 import vehiclepartspro.repositories.ProductRepository;
 import vehiclepartspro.repositories.PurchaseRepository;
 import vehiclepartspro.repositories.UserRepository;
-import vehiclepartspro.support.exception.ProductNotAvaiableException;
-import vehiclepartspro.support.exception.QuantityProductNotAvaiableException;
+import vehiclepartspro.support.exception.purchaseException.ProductNotAvaiableException;
+import vehiclepartspro.support.exception.purchaseException.QuantityProductNotAvaiableException;
+import vehiclepartspro.support.exception.purchaseException.NotNegativeQuantityException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,34 +33,37 @@ public class PurchaseService
     @Autowired
     private UserRepository userRepository;
 
-
-    @Transactional
-    public List<Product> addPurchases(List<Product> products, User u) throws QuantityProductNotAvaiableException, ProductNotAvaiableException {
+    @Transactional(rollbackFor = {Exception.class})
+    public List<Product> addPurchases(List<Product> products, User u) throws QuantityProductNotAvaiableException, ProductNotAvaiableException, NotNegativeQuantityException {
         List<Product> ret= new ArrayList<>();
 
-        for (Product p : products)
+        for (Product p: products)
         {
+
             Product prodotto = addPurchase(p, u);
             ret.add(prodotto);
         }
-
         return ret;
     }
 
 
-
     @Transactional(readOnly = false)
-    public Product addPurchase(Product p, User u) throws QuantityProductNotAvaiableException, ProductNotAvaiableException {
+    protected Product addPurchase(Product p, User u) throws NotNegativeQuantityException, ProductNotAvaiableException, QuantityProductNotAvaiableException {
         //prendiamo il prodotto dal db
 
-        if(!productRepository.existsProductByBarCode(p.getBarCode()))
+        if(p.getQuantity()<0)
+        {
+            throw new NotNegativeQuantityException(p);
+        }
+
+        if(!productRepository.existsProductByBarCode(p.getBarCode().trim().toUpperCase()))
         {
             throw new ProductNotAvaiableException(p);
         }
-        Product p1= productRepository.findByBarCode(p.getBarCode());
+        Product p1= productRepository.findByBarCode(p.getBarCode().trim().toUpperCase());
 
         //prendiamo l'utente dal db
-        User u1= userRepository.findByFiscalCode(u.getFiscalCode());
+        User u1= userRepository.findByFiscalCode(u.getFiscalCode().trim().toUpperCase());
         //verifico che il prodotto sia disponibile con il codice del prodotto nel db e la quantità del prodotto
         //passato
 
@@ -89,11 +93,13 @@ public class PurchaseService
         return p;
     }
 
-
-    public boolean avaiableProduct(int productID, int quantity)
+    private boolean avaiableProduct(int productID, int quantity)
     {
         return productRepository.findQuantityById(productID) >= quantity;
-
     }
+
+    //TODO metodo getAllUserPurchases()
+    //TODO metodo getAllUserPurchases(Date from, Date to)
+
 
 }

@@ -41,7 +41,8 @@ public class CarService
         return carRepository.existsCarByBrandAndModelAndYear(brand, model, year);
     }
 
-    public List<Car> AllCars() {
+    public List<Car> AllCars()
+    {
         return carRepository.findAll();
     }
 }

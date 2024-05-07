@@ -1,5 +1,6 @@
 package vehiclepartspro.services;
 
+import org.springframework.transaction.annotation.Transactional;
 import vehiclepartspro.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ public class AccountingService
     @Autowired
     UserRepository userRepository;
 
+    @Transactional(readOnly = false)
     public User UserSave(User user) throws FiscalCodeUserExistsException
     {
 
@@ -22,6 +24,5 @@ public class AccountingService
         }
         user.setFiscalCode(fiscalCode);
         return userRepository.save(user);
-
     }
 }

@@ -43,16 +43,9 @@ public class Product
     @Column(name = "quantity", nullable = true)
     private int quantity;
 
-    @Version
-    @Column(name = "version", nullable = false)
-    @JsonIgnore
-    private long version;
-
-
     @ManyToOne()
     @JoinColumn(name="car_id")
     private Car car;
-
 
     @OneToMany(targetEntity = ProductInPurchase.class, mappedBy = "product", cascade = CascadeType.MERGE)
     @JsonIgnore
