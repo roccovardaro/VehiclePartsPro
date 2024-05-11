@@ -37,7 +37,4 @@ public class Purchase
 
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.MERGE)
     private List<ProductInPurchase> productsInPurchase;
-
-
-
 }

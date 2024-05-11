@@ -1,4 +1,4 @@
-package vehiclepartspro.support.exception;
+package vehiclepartspro.support.exception.accountingException;
 
 public class FiscalCodeUserExistsException extends RuntimeException
 {

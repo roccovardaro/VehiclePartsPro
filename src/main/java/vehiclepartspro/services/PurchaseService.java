@@ -1,6 +1,7 @@
 package vehiclepartspro.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vehiclepartspro.entities.Product;
@@ -16,10 +17,8 @@ import vehiclepartspro.support.exception.purchaseException.QuantityProductNotAva
 import vehiclepartspro.support.exception.purchaseException.NotNegativeQuantityException;
 
 import java.util.ArrayList;
-import java.util.List;
-
-
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class PurchaseService
@@ -37,10 +36,20 @@ public class PurchaseService
     public List<Product> addPurchases(List<Product> products, User u) throws QuantityProductNotAvaiableException, ProductNotAvaiableException, NotNegativeQuantityException {
         List<Product> ret= new ArrayList<>();
 
+        //prendiamo l'utente dal db
+        //TODO fare verifiche sull'utente
+        User u_db = userRepository.findByFiscalCode(u.getFiscalCode().trim().toUpperCase());
+
+        //creo l'acquisto che va fatto e passo il purchase a ogni prodotto da acquistare (in questo acquisto)
+        Purchase purchase = new Purchase();
+        purchase.setBuyer(u_db);
+        purchase.setPurchaseTime(new Date());
+        purchaseRepository.save(purchase);
+
         for (Product p: products)
         {
 
-            Product prodotto = addPurchase(p, u);
+            Product prodotto = addProductInPurchase(p,purchase);
             ret.add(prodotto);
         }
         return ret;
@@ -48,7 +57,7 @@ public class PurchaseService
 
 
     @Transactional(readOnly = false)
-    protected Product addPurchase(Product p, User u) throws NotNegativeQuantityException, ProductNotAvaiableException, QuantityProductNotAvaiableException {
+    protected Product addProductInPurchase(Product p, Purchase purchase) throws NotNegativeQuantityException, ProductNotAvaiableException, QuantityProductNotAvaiableException {
         //prendiamo il prodotto dal db
 
         if(p.getQuantity()<0)
@@ -60,32 +69,28 @@ public class PurchaseService
         {
             throw new ProductNotAvaiableException(p);
         }
-        Product p1= productRepository.findByBarCode(p.getBarCode().trim().toUpperCase());
 
-        //prendiamo l'utente dal db
-        User u1= userRepository.findByFiscalCode(u.getFiscalCode().trim().toUpperCase());
+        //prendo il prodotto dal db
+        Product p_db = productRepository.findByBarCode(p.getBarCode().trim().toUpperCase());
+
+
         //verifico che il prodotto sia disponibile con il codice del prodotto nel db e la quantità del prodotto
         //passato
 
-        if(!avaiableProduct(p1.getId(),p.getQuantity()))
+        if(!avaiableProduct(p_db.getQuantity(),p.getQuantity()))
         {
             throw new QuantityProductNotAvaiableException(p);
         }
 
-        //DOPO LA VERIFICA DELLA QUANTITA´ PROCEDIAMO CON L'ACQUISTO
-
-        Purchase purchase = new Purchase();
-        purchase.setBuyer(u1);
-        purchase.setPurchaseTime(new Date());
-        purchaseRepository.save(purchase);
+        //DOPO LA VERIFICA DELLA QUANTITA´ PROCEDIAMO CON L'AGGIUNGERE IL PRODOTTO NELL'ACQUISTO(PRODUCTINPURCHASE)
 
         //Sottraiamo la quantita acquistata
         //questa modifica verrà automaticamente propagata al database quando la transazione verrà committata.
         // Non è necessario chiamare save() di nuovo sul repository per salvare le modifiche
-        p1.setQuantity(p1.getQuantity()- p.getQuantity());
+        p_db.setQuantity(p_db.getQuantity()- p.getQuantity());
 
         ProductInPurchase productInPurchase = new ProductInPurchase();
-        productInPurchase.setProduct(p1);
+        productInPurchase.setProduct(p_db);
         productInPurchase.setPurchase(purchase);
         productInPurchase.setQuantity(p.getQuantity());
 
@@ -93,13 +98,46 @@ public class PurchaseService
         return p;
     }
 
-    private boolean avaiableProduct(int productID, int quantity)
+    private boolean avaiableProduct(int productQuantity , int quantity)
     {
-        return productRepository.findQuantityById(productID) >= quantity;
+        return productQuantity>= quantity;
     }
 
-    //TODO metodo getAllUserPurchases()
-    //TODO metodo getAllUserPurchases(Date from, Date to)
+    @Transactional(readOnly = true)
+    public List<List<ProductInPurchase>> getAllPurchasedProducts(User u)
+    {
+        return getAllPurchasedProducts(u,null,null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<List<ProductInPurchase>> getAllPurchasedProducts(User u, Date fromDate, Date toDate)
+    {
+        //TODO fare i controlli sulla data
+        //TODO fare la paginazione
+
+        List<List<ProductInPurchase>> ret = new ArrayList<>();
+        //mi prendo la lista degli acquisti dell'utente
+        User u_db= userRepository.findByFiscalCode(u.getFiscalCode().trim().toUpperCase());
+        List<Purchase> purchases=new ArrayList<>();
+
+        //se sono null prendiamo tutti gli ordini dell'utente
+        if (fromDate != null && toDate != null)
+            purchases = purchaseRepository.findByBuyer(u_db);
+        else
+            purchases=purchaseRepository.findByBuyerAndPurchaseTimeBetween(u_db, fromDate, toDate);
+
+        for(Purchase purchase: purchases)
+        {
+            ret.add(getAllProductsOfPurchase(purchase));
+        }
+        return ret;
+
+    }
+    @Transactional(readOnly = true)
+    protected List<ProductInPurchase> getAllProductsOfPurchase(Purchase p)
+    {
+        return productInPurchaseRepository.findProductsInPurchaseByPurchase(p);
+    }
 
 
 }

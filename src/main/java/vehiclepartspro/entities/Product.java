@@ -20,6 +20,7 @@ public class Product
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     @Column(name = "id", nullable = false)
     private int id;
 
@@ -28,7 +29,7 @@ public class Product
     private String name;
 
     @Basic
-    @Column(name = "bar_code", nullable = true,length = 100)
+    @Column(name = "bar_code", nullable = true,length = 10,unique = true)
     private String barCode;
 
     @Basic

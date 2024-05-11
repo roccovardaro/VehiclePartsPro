@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vehiclepartspro.services.AccountingService;
-import vehiclepartspro.support.exception.FiscalCodeUserExistsException;
+import vehiclepartspro.support.exception.accountingException.FiscalCodeUserExistsException;
 
 @RestController
 @RequestMapping("/users")

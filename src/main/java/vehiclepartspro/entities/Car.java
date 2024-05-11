@@ -47,8 +47,4 @@ public class Car
     @JsonIgnore
     private List<Product> products;
 
-
-
-
-
 }

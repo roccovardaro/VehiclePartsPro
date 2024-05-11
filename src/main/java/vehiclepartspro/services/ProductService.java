@@ -1,22 +1,31 @@
 package vehiclepartspro.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vehiclepartspro.entities.Car;
 import vehiclepartspro.entities.Product;
+import vehiclepartspro.repositories.CarRepository;
 import vehiclepartspro.repositories.ProductRepository;
 import vehiclepartspro.support.exception.NotNegativePriceException;
 import vehiclepartspro.support.exception.purchaseException.NotNegativeQuantityException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ProductService
 {
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private CarRepository carRepository;
 
-    @Transactional(readOnly = false)
-
-    public Product addProduct (Product product) throws NotNegativeQuantityException, NotNegativePriceException
+    /*public Product addProduct (Product product) throws NotNegativeQuantityException, NotNegativePriceException
     {
         if(product.getQuantity()<0)
         {
@@ -50,9 +59,26 @@ public class ProductService
         p.setQuantity(product.getQuantity());
         return p;
 
+    }*/
+
+    public List<Product> getAllProductsOfCar(Car car, int pageNumber, int pageSize, String sortBy)
+    {
+        //TODO verifiche da fare
+
+        //prendo la car dal db
+        Car car_db= carRepository.findCarByModelAndYearAndBrand(car.getModel().trim().toUpperCase(), car.getYear(), car.getBrand().trim().toUpperCase());
+
+        Pageable page= PageRequest.of(pageNumber,pageSize, Sort.by(sortBy));
+        Page<Product> pagedResult= productRepository.findAllByCar(car_db,page);
+
+        if(pagedResult.hasContent()) //facciamo il controllo perchè può restituire null
+        {
+            return pagedResult.getContent();
+        }
+        else
+        {
+            return new ArrayList<>();
+        }
     }
-
-    //TODO getAllProductsOfCar(Car car)
-
 
 }

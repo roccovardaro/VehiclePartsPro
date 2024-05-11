@@ -6,6 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vehiclepartspro.controllers.request.PurchaseListRequest;
 import vehiclepartspro.entities.Product;
+import vehiclepartspro.entities.ProductInPurchase;
+import vehiclepartspro.entities.User;
 import vehiclepartspro.services.PurchaseService;
 import vehiclepartspro.support.exception.purchaseException.ProductNotAvaiableException;
 import vehiclepartspro.support.exception.purchaseException.QuantityProductNotAvaiableException;
@@ -36,5 +38,13 @@ public class PurchaseController
 
     }
 
+    @GetMapping("/showPurchasedProducts")
+    public ResponseEntity showPurchasedProducts(@RequestBody User u)
+    {
+        List<List<ProductInPurchase>> ret= purchaseService.getAllPurchasedProducts(u);
+        {
+            return new ResponseEntity<>(ret,HttpStatus.OK);
+        }
+    }
 
 }

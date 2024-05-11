@@ -5,7 +5,7 @@ import vehiclepartspro.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vehiclepartspro.repositories.UserRepository;
-import vehiclepartspro.support.exception.FiscalCodeUserExistsException;
+import vehiclepartspro.support.exception.accountingException.FiscalCodeUserExistsException;
 
 
 @Service
