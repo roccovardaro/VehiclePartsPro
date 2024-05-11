@@ -18,6 +18,7 @@ import java.util.List;
 
 public class Manufacturer
 {
+    //prova
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
