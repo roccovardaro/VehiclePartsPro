@@ -95,7 +95,7 @@ public class PurchaseService
         productInPurchase.setQuantity(p.getQuantity());
 
         productInPurchaseRepository.save(productInPurchase);
-        return p;
+        return p_db;
     }
 
     private boolean avaiableProduct(int productQuantity , int quantity)

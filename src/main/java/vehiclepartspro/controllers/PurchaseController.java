@@ -35,7 +35,6 @@ public class PurchaseController
         {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-
     }
 
     @GetMapping("/showPurchasedProducts")

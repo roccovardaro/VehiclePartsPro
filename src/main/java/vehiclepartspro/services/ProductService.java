@@ -81,4 +81,22 @@ public class ProductService
         }
     }
 
+    @Transactional(readOnly = true)
+    public List<Product> getAllProductsByName(String name, int pageNumber, int pageSize, String sortBy)
+    {
+        Pageable page= PageRequest.of(pageNumber,pageSize, Sort.by(sortBy));
+        String searchTerm= "%"+name+"%";
+       Page<Product> pageResult= productRepository.findProductsByName(searchTerm,page);
+
+       if(pageResult.hasContent())
+       {
+           return pageResult.getContent();
+       }
+       else
+       {
+           return new ArrayList<>();
+       }
+
+    }
+
 }
