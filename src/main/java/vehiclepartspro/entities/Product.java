@@ -48,6 +48,10 @@ public class Product
     @JoinColumn(name="car_id")
     private Car car;
 
+    @ManyToOne()
+    @JoinColumn(name = "manufacturer_id", nullable = true)
+    private Manufacturer manufacturer;
+
     @OneToMany(targetEntity = ProductInPurchase.class, mappedBy = "product", cascade = CascadeType.MERGE)
     @JsonIgnore
     @ToString.Exclude
