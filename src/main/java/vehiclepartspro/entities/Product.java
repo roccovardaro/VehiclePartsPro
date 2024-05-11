@@ -42,6 +42,7 @@ public class Product
 
     @Basic
     @Column(name = "quantity", nullable = true)
+    @JsonIgnore
     private int quantity;
 
     @ManyToOne()

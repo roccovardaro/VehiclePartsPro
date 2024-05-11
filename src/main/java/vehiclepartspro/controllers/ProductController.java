@@ -18,7 +18,7 @@ public class ProductController
     private ProductService productService;
 
     
-    @GetMapping
+    @GetMapping("/byCar")
     public ResponseEntity getAllProductsOfCar(@RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
                                               @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
                                               @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
@@ -26,7 +26,17 @@ public class ProductController
     {
         List<Product> products= productService.getAllProductsOfCar(car, pageNumber, pageSize, sortBy);
         return new ResponseEntity(products, HttpStatus.OK);
-
     }
+
+    @GetMapping("byName")
+    public ResponseEntity getAllProductsByName(@RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
+                                               @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+                                               @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
+                                               @RequestParam(value = "name") String name)
+    {
+        List<Product> products = productService.getAllProductsByName(name, pageNumber, pageSize, sortBy);
+        return new ResponseEntity(products, HttpStatus.OK);
+    }
+
 
 }
