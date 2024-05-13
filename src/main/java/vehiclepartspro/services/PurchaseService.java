@@ -1,7 +1,10 @@
 package vehiclepartspro.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vehiclepartspro.entities.Product;
@@ -95,7 +98,9 @@ public class PurchaseService
         productInPurchase.setQuantity(p.getQuantity());
 
         productInPurchaseRepository.save(productInPurchase);
-        return p_db;
+
+
+        return p;
     }
 
     private boolean avaiableProduct(int productQuantity , int quantity)
@@ -103,40 +108,33 @@ public class PurchaseService
         return productQuantity>= quantity;
     }
 
+
     @Transactional(readOnly = true)
-    public List<List<ProductInPurchase>> getAllPurchasedProducts(User u)
+    public List<Purchase> getAllPurchasedProducts(User u,int pageNumber, int pageSize, String sortBy)
     {
-        return getAllPurchasedProducts(u,null,null);
+        return getAllPurchasedProducts(u,null,null,pageNumber,pageSize,sortBy);
     }
 
     @Transactional(readOnly = true)
-    public List<List<ProductInPurchase>> getAllPurchasedProducts(User u, Date fromDate, Date toDate)
+    public List<Purchase> getAllPurchasedProducts(User u, Date fromDate, Date toDate, int pageNumber, int pageSize,String sortBy)
     {
-        //TODO fare i controlli sulla data
-        //TODO fare la paginazione
-
         List<List<ProductInPurchase>> ret = new ArrayList<>();
         //mi prendo la lista degli acquisti dell'utente
         User u_db= userRepository.findByFiscalCode(u.getFiscalCode().trim().toUpperCase());
-        List<Purchase> purchases=new ArrayList<>();
-
+        //creiamo il pageable
+        Pageable pageable= PageRequest.of(pageNumber,pageSize,Sort.by(sortBy));
+        Page<Purchase> purchases;
         //se sono null prendiamo tutti gli ordini dell'utente
-        if (fromDate != null && toDate != null)
-            purchases = purchaseRepository.findByBuyer(u_db);
+        if (fromDate == null && toDate == null)
+            purchases = purchaseRepository.findByBuyer(u_db,pageable);
         else
-            purchases=purchaseRepository.findByBuyerAndPurchaseTimeBetween(u_db, fromDate, toDate);
+            purchases=purchaseRepository.findByBuyerAndPurchaseTimeBetween(u_db, fromDate, toDate,pageable);
 
-        for(Purchase purchase: purchases)
+        if (purchases.hasContent())
         {
-            ret.add(getAllProductsOfPurchase(purchase));
+            return purchases.getContent();
         }
-        return ret;
-
-    }
-    @Transactional(readOnly = true)
-    protected List<ProductInPurchase> getAllProductsOfPurchase(Purchase p)
-    {
-        return productInPurchaseRepository.findProductsInPurchaseByPurchase(p);
+        return new ArrayList<>();
     }
 
 

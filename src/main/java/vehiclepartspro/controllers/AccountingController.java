@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import vehiclepartspro.services.AccountingService;
 import vehiclepartspro.support.exception.accountingException.FiscalCodeUserExistsException;
+import vehiclepartspro.support.exception.accountingException.MailUserExistsException;
 
 @RestController
 @RequestMapping("/users")
@@ -31,6 +32,10 @@ public class AccountingController
         catch (FiscalCodeUserExistsException f)
         {
             return new ResponseEntity<>("ERROR_FISCAL_CODE_ALREADY_EXISTS", HttpStatus.BAD_REQUEST);
+        }
+        catch (MailUserExistsException m)
+        {
+            return new ResponseEntity<>("ERROR_MAIL_ALREADY_EXISTS", HttpStatus.BAD_REQUEST);
         }
 
     }

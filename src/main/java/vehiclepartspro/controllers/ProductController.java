@@ -21,7 +21,7 @@ public class ProductController
     @GetMapping("/byCar")
     public ResponseEntity getAllProductsOfCar(@RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
                                               @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-                                              @RequestParam(value = "sortBy", defaultValue = "id") String sortBy,
+                                              @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
                                               @RequestBody Car car)
     {
         List<Product> products= productService.getAllProductsOfCar(car, pageNumber, pageSize, sortBy);

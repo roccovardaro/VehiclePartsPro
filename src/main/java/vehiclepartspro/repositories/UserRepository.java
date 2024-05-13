@@ -10,5 +10,6 @@ extends JpaRepository<User, Long>
 {
     User findByFiscalCode(String fiscalCode);
     boolean existsByFiscalCode(String fiscalCode);
+    boolean existsByEmail(String email);
 
 }
