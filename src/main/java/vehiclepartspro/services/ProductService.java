@@ -8,6 +8,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vehiclepartspro.entities.Car;
+import vehiclepartspro.entities.DTO.mapper.ProductMapper;
+import vehiclepartspro.entities.DTO.productDTO.ProductDTOResponse;
 import vehiclepartspro.entities.Product;
 import vehiclepartspro.repositories.CarRepository;
 import vehiclepartspro.repositories.ProductRepository;
@@ -25,6 +27,7 @@ public class ProductService
     @Autowired
     private CarRepository carRepository;
 
+    //TODO metodi per inserire prodotti nel db
     /*public Product addProduct (Product product) throws NotNegativeQuantityException, NotNegativePriceException
     {
         if(product.getQuantity()<0)
@@ -61,6 +64,7 @@ public class ProductService
 
     }*/
 
+    //TODO passare il CarDTO al posto di Car
     public List<Product> getAllProductsOfCar(Car car, int pageNumber, int pageSize, String sortBy)
     {
         //TODO verifiche da fare
@@ -81,16 +85,24 @@ public class ProductService
         }
     }
 
+
     @Transactional(readOnly = true)
-    public List<Product> getAllProductsByName(String name, int pageNumber, int pageSize, String sortBy)
+    public List<ProductDTOResponse> getAllProductsByName(String name, int pageNumber, int pageSize, String sortBy)
     {
+        List<ProductDTOResponse>retProductDTO= new ArrayList<>();
         Pageable page= PageRequest.of(pageNumber,pageSize, Sort.by(sortBy));
         String searchTerm= "%"+name+"%";
-       Page<Product> pageResult= productRepository.findProductsByName(searchTerm,page);
+        Page<Product> pageResult= productRepository.findProductsByName(searchTerm,page);
 
        if(pageResult.hasContent())
        {
-           return pageResult.getContent();
+           List<Product> products = pageResult.getContent();
+           for(Product product: products)
+           {
+               ProductDTOResponse productDTOResponse = ProductMapper.convertToDTO(product);
+               retProductDTO.add(productDTOResponse);
+           }
+           return retProductDTO;
        }
        else
        {

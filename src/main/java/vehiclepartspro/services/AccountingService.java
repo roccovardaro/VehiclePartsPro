@@ -1,6 +1,8 @@
 package vehiclepartspro.services;
 
 import org.springframework.transaction.annotation.Transactional;
+import vehiclepartspro.entities.DTO.userDTO.UserDTO;
+import vehiclepartspro.entities.DTO.mapper.UserMapper;
 import vehiclepartspro.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,11 +18,12 @@ public class AccountingService
     UserRepository userRepository;
 
     @Transactional(readOnly = false)
-    public User UserSave(User user) throws FiscalCodeUserExistsException, MailUserExistsException {
+    public User UserSave(UserDTO userDTO) throws FiscalCodeUserExistsException, MailUserExistsException {
 
-        String fiscalCode = user.getFiscalCode().trim().toUpperCase();
-
-        if (userRepository.existsByFiscalCode(fiscalCode)) {
+        //todo fare opportuni controlli
+        User user= UserMapper.convertDTOtoEntity(userDTO);
+        if (userRepository.existsByFiscalCode(user.getFiscalCode()))
+        {
             throw new FiscalCodeUserExistsException();
         }
         if( userRepository.existsByEmail(user.getEmail()))
@@ -28,7 +31,6 @@ public class AccountingService
             throw new MailUserExistsException();
         }
 
-        user.setFiscalCode(fiscalCode);
         return userRepository.save(user);
     }
 }

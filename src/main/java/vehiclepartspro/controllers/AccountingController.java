@@ -2,6 +2,7 @@ package vehiclepartspro.controllers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import vehiclepartspro.entities.DTO.userDTO.UserDTO;
 import vehiclepartspro.entities.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,11 +22,11 @@ public class AccountingController
     private AccountingService accountingService;
 
     @PostMapping("/save")
-    public ResponseEntity saveUser(@RequestBody User user)
+    public ResponseEntity saveUser(@RequestBody UserDTO userDTO)
     {
         try
         {
-            User added= accountingService.UserSave(user);
+            User added= accountingService.UserSave(userDTO);
             return new ResponseEntity<>(added, HttpStatus.OK);
 
         }

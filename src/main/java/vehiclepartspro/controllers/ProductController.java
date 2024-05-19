@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vehiclepartspro.entities.Car;
+import vehiclepartspro.entities.DTO.productDTO.ProductDTOResponse;
 import vehiclepartspro.entities.Product;
 import vehiclepartspro.services.ProductService;
 
@@ -32,10 +33,10 @@ public class ProductController
     public ResponseEntity getAllProductsByName(@RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
                                                @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
                                                @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
-                                               @RequestParam(value = "name") String name)
+                                               @RequestParam(value = "name",required = true) String name)
     {
-        List<Product> products = productService.getAllProductsByName(name, pageNumber, pageSize, sortBy);
-        return new ResponseEntity(products, HttpStatus.OK);
+        List<ProductDTOResponse> productsDTO = productService.getAllProductsByName(name, pageNumber, pageSize, sortBy);
+        return new ResponseEntity(productsDTO, HttpStatus.OK);
     }
 
 

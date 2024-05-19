@@ -15,6 +15,8 @@ import java.util.List;
 @Repository
 public interface PurchaseRepository extends JpaRepository<Purchase, Integer>
 {
+
+    Purchase findOneById(int id);
     Page<Purchase> findByBuyer(User user, Pageable pageable);
     Page<Purchase> findByBuyerAndPurchaseTimeBetween(User buyer, Date fromDate, Date toDate, Pageable pageable);
 

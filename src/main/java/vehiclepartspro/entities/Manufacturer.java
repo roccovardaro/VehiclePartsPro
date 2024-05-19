@@ -48,5 +48,4 @@ public class Manufacturer
     @JsonIgnore
     private List<Product> products;
 
-
 }

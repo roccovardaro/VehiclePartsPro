@@ -7,6 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vehiclepartspro.entities.DTO.PurchaseDTO.PurchaseDTO;
+import vehiclepartspro.entities.DTO.PurchaseDTO.PurchaseDTOResponseBuy;
+import vehiclepartspro.entities.DTO.mapper.ProductMapper;
+import vehiclepartspro.entities.DTO.mapper.PurchaseMapper;
+import vehiclepartspro.entities.DTO.productDTO.ProductDTORequestBuy;
+import vehiclepartspro.entities.DTO.productDTO.ProductDTOResponseBuy;
 import vehiclepartspro.entities.Product;
 import vehiclepartspro.entities.ProductInPurchase;
 import vehiclepartspro.entities.Purchase;
@@ -35,13 +41,13 @@ public class PurchaseService
     @Autowired
     private UserRepository userRepository;
 
+    //todo errore sul DTO (devo usare PurchaseDTO) e non PRoductDTOResponse
     @Transactional(rollbackFor = {Exception.class})
-    public List<Product> addPurchases(List<Product> products, User u) throws QuantityProductNotAvaiableException, ProductNotAvaiableException, NotNegativeQuantityException {
-        List<Product> ret= new ArrayList<>();
+    public PurchaseDTOResponseBuy addPurchases(List<ProductDTORequestBuy> productsDTO, String fiscalCode) throws QuantityProductNotAvaiableException, ProductNotAvaiableException, NotNegativeQuantityException {
 
         //prendiamo l'utente dal db
         //TODO fare verifiche sull'utente
-        User u_db = userRepository.findByFiscalCode(u.getFiscalCode().trim().toUpperCase());
+        User u_db = userRepository.findByFiscalCode(fiscalCode.trim().toUpperCase());
 
         //creo l'acquisto che va fatto e passo il purchase a ogni prodotto da acquistare (in questo acquisto)
         Purchase purchase = new Purchase();
@@ -49,15 +55,25 @@ public class PurchaseService
         purchase.setPurchaseTime(new Date());
         purchaseRepository.save(purchase);
 
+        List<Product> products= ProductMapper.convertToEntity(productsDTO);
+        double total_price=0;
+        //creo il PurchaseDTOResponseBuy
+        PurchaseDTOResponseBuy purchaseDTOResponseBuy = new PurchaseDTOResponseBuy();
+        purchaseDTOResponseBuy.setPurchaseId(purchase.getId());
+
         for (Product p: products)
         {
 
-            Product prodotto = addProductInPurchase(p,purchase);
-            ret.add(prodotto);
+            Product p_db = addProductInPurchase(p,purchase);
+            total_price+=p_db.getPrice();
+            //creo il DTO
+            ProductDTOResponseBuy productDTOResponseBuy = ProductMapper.convertToDTO(p_db,p.getQuantity());
+            purchaseDTOResponseBuy.getProducts().add(productDTOResponseBuy);
+            //metto la quantità acquistata dell'oggetto
         }
-        return ret;
+        purchaseDTOResponseBuy.setTotal_price(total_price);
+        return purchaseDTOResponseBuy;
     }
-
 
     @Transactional(readOnly = false)
     protected Product addProductInPurchase(Product p, Purchase purchase) throws NotNegativeQuantityException, ProductNotAvaiableException, QuantityProductNotAvaiableException {
@@ -82,7 +98,7 @@ public class PurchaseService
 
         if(!avaiableProduct(p_db.getQuantity(),p.getQuantity()))
         {
-            throw new QuantityProductNotAvaiableException(p);
+            throw new QuantityProductNotAvaiableException(p_db);
         }
 
         //DOPO LA VERIFICA DELLA QUANTITA´ PROCEDIAMO CON L'AGGIUNGERE IL PRODOTTO NELL'ACQUISTO(PRODUCTINPURCHASE)
@@ -99,8 +115,7 @@ public class PurchaseService
 
         productInPurchaseRepository.save(productInPurchase);
 
-
-        return p;
+        return p_db;
     }
 
     private boolean avaiableProduct(int productQuantity , int quantity)
@@ -110,17 +125,17 @@ public class PurchaseService
 
 
     @Transactional(readOnly = true)
-    public List<Purchase> getAllPurchasedProducts(User u,int pageNumber, int pageSize, String sortBy)
+    public List<PurchaseDTO> getAllPurchasedProducts(String fiscalCode,int pageNumber, int pageSize, String sortBy)
     {
-        return getAllPurchasedProducts(u,null,null,pageNumber,pageSize,sortBy);
+        return getAllPurchasedProducts(fiscalCode,null,null,pageNumber,pageSize,sortBy);
     }
 
     @Transactional(readOnly = true)
-    public List<Purchase> getAllPurchasedProducts(User u, Date fromDate, Date toDate, int pageNumber, int pageSize,String sortBy)
+    public List<PurchaseDTO> getAllPurchasedProducts(String fiscalCode, Date fromDate, Date toDate, int pageNumber, int pageSize,String sortBy)
     {
-        List<List<ProductInPurchase>> ret = new ArrayList<>();
+        List<PurchaseDTO> retDTO = new ArrayList<>();
         //mi prendo la lista degli acquisti dell'utente
-        User u_db= userRepository.findByFiscalCode(u.getFiscalCode().trim().toUpperCase());
+        User u_db= userRepository.findByFiscalCode(fiscalCode.trim().toUpperCase());
         //creiamo il pageable
         Pageable pageable= PageRequest.of(pageNumber,pageSize,Sort.by(sortBy));
         Page<Purchase> purchases;
@@ -132,7 +147,13 @@ public class PurchaseService
 
         if (purchases.hasContent())
         {
-            return purchases.getContent();
+            List<Purchase> purchasesList = purchases.getContent();
+            for(Purchase purchase : purchasesList)
+            {
+                PurchaseDTO purchaseDTO= PurchaseMapper.convertToDTO(purchase);
+                retDTO.add(purchaseDTO);
+            }
+            return retDTO;
         }
         return new ArrayList<>();
     }
