@@ -13,5 +13,5 @@ public class CarDTORequest implements Serializable
     private int year;
     private String description;
 
-    public CarDTORequest() {}
+    private CarDTORequest() {}
 }

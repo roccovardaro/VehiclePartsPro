@@ -1,10 +1,13 @@
 package vehiclepartspro.entities.DTO.mapper;
 
+import vehiclepartspro.entities.Car;
 import vehiclepartspro.entities.DTO.carDTO.CarDTOResponse;
 import vehiclepartspro.entities.DTO.manufacturerDTO.ManufacturerDTOResponse;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTORequestBuy;
+import vehiclepartspro.entities.DTO.productDTO.ProductDTORequestInsert;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTOResponse;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTOResponseBuy;
+import vehiclepartspro.entities.Manufacturer;
 import vehiclepartspro.entities.Product;
 
 import java.util.ArrayList;
@@ -57,6 +60,19 @@ public class ProductMapper
         productDTOResponse.setName(product.getName());
         productDTOResponse.setId(product.getId());
         return productDTOResponse;
+    }
+
+    public static Product convertToEntity(ProductDTORequestInsert productDTO, Car car, Manufacturer manufacturer)
+    {
+        Product product = new Product();
+        product.setName(productDTO.getName());
+        product.setBarCode(productDTO.getBar_code());
+        product.setDescription(productDTO.getDescription());
+        product.setPrice(productDTO.getPrice());
+        product.setManufacturer(manufacturer);
+        product.setQuantity(productDTO.getQuantity());
+        product.setCar(car);
+        return product;
     }
 
 }

@@ -41,12 +41,21 @@ public class PurchaseService
     @Autowired
     private UserRepository userRepository;
 
-    //todo errore sul DTO (devo usare PurchaseDTO) e non PRoductDTOResponse
+    /**
+     *
+     * @param productsDTO prodotto da Inserire
+     * @param fiscalCode del cliente che ha effettuato l'ordine
+     * @return PurchaseDTOResponseBuy -> DTO del Purchase (quando si fa l'acquisto) che contiene i DTO dei prodotti acquistati
+     * @throws QuantityProductNotAvaiableException
+     * @throws ProductNotAvaiableException
+     * @throws NotNegativeQuantityException
+     */
     @Transactional(rollbackFor = {Exception.class})
     public PurchaseDTOResponseBuy addPurchases(List<ProductDTORequestBuy> productsDTO, String fiscalCode) throws QuantityProductNotAvaiableException, ProductNotAvaiableException, NotNegativeQuantityException {
 
         //prendiamo l'utente dal db
         //TODO fare verifiche sull'utente
+
         User u_db = userRepository.findByFiscalCode(fiscalCode.trim().toUpperCase());
 
         //creo l'acquisto che va fatto e passo il purchase a ogni prodotto da acquistare (in questo acquisto)
@@ -75,6 +84,15 @@ public class PurchaseService
         return purchaseDTOResponseBuy;
     }
 
+    /**
+     * Inserisce il prodotto nel db -> metodo utilizzato nel metodo {@link #addPurchases(List, String)}
+     * @param p Prodotto da inserire nell'acquisto
+     * @param purchase acquisto
+     * @return il prodotto acquistato (quello del db)
+     * @throws NotNegativeQuantityException
+     * @throws ProductNotAvaiableException
+     * @throws QuantityProductNotAvaiableException
+     */
     @Transactional(readOnly = false)
     protected Product addProductInPurchase(Product p, Purchase purchase) throws NotNegativeQuantityException, ProductNotAvaiableException, QuantityProductNotAvaiableException {
         //prendiamo il prodotto dal db

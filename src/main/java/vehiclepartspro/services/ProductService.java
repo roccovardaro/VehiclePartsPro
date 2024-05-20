@@ -9,11 +9,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import vehiclepartspro.entities.Car;
 import vehiclepartspro.entities.DTO.mapper.ProductMapper;
+import vehiclepartspro.entities.DTO.productDTO.ProductDTORequestInsert;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTOResponse;
+import vehiclepartspro.entities.Manufacturer;
 import vehiclepartspro.entities.Product;
 import vehiclepartspro.repositories.CarRepository;
+import vehiclepartspro.repositories.ManufacturerRepository;
 import vehiclepartspro.repositories.ProductRepository;
-import vehiclepartspro.support.exception.NotNegativePriceException;
+import vehiclepartspro.support.exception.productException.CarNotFoundException;
+import vehiclepartspro.support.exception.productException.ManufacturerNotFoundException;
+import vehiclepartspro.support.exception.productException.NotNegativePriceException;
 import vehiclepartspro.support.exception.purchaseException.NotNegativeQuantityException;
 
 import java.util.ArrayList;
@@ -26,43 +31,70 @@ public class ProductService
     private ProductRepository productRepository;
     @Autowired
     private CarRepository carRepository;
+    @Autowired
+    private ManufacturerRepository manufacturerRepository;
 
     //TODO metodi per inserire prodotti nel db
-    /*public Product addProduct (Product product) throws NotNegativeQuantityException, NotNegativePriceException
-    {
-        if(product.getQuantity()<0)
+
+    /**
+     * Inserisce un prodotto all'interno del db
+     * @param productDTO oggettoDTO contenente le informazioni del prodotto da inserire
+     * @return {@link ProductDTOResponse} DTO che incapsula le informazioni di ritorno del prodotto inserito
+     * @throws NotNegativeQuantityException
+     * @throws NotNegativePriceException
+     * @throws CarNotFoundException
+     * @throws ManufacturerNotFoundException
+     */
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public ProductDTOResponse addProduct (ProductDTORequestInsert productDTO) throws NotNegativeQuantityException, NotNegativePriceException, CarNotFoundException, ManufacturerNotFoundException {
+        //VERIFICHE CAMPI PRODUCTDTO
+        boolean existProduct= productRepository.existsProductByBarCode(productDTO.getBar_code().trim().toUpperCase());
+
+        if(! existProduct)
+        {
+            //verifiche da fare solo se il prodotto non è presente nel db
+            if(productDTO.getPrice()<0)
+            {
+                throw new NotNegativePriceException();
+            }
+            if(! carRepository.existsCarById(productDTO.getCar_id()))
+            {
+                throw new CarNotFoundException();
+            }
+            if (! manufacturerRepository.existsById(productDTO.getManufacturer_id()))
+            {
+                throw new ManufacturerNotFoundException();
+            }
+        }
+        //verifica da fare sia se il prodotto esiste sia se non esiste
+        if(productDTO.getQuantity()<0)
         {
             throw new NotNegativeQuantityException();
         }
-        if(product.getPrice()<0)
-        {
-            throw new NotNegativePriceException();
-        }
-        if(productRepository.existsProductByBarCode(product.getBarCode().trim().toUpperCase()))
+        //FINE VERIFICHE CAMPI PRODUCTDTO
+
+
+        if(existProduct)
         {
             //prodotto del db
-            Product p= productRepository.findByBarCode(product.getBarCode().trim().toUpperCase());
-            p.setQuantity(p.getQuantity()+product.getQuantity());
-            return p;
+            Product p_db = productRepository.findByBarCode(productDTO.getBar_code().trim().toUpperCase());
+            p_db.setQuantity(p_db.getQuantity()+productDTO.getQuantity());
+            return ProductMapper.convertToDTO(p_db);
         }
+        //altrimenti se non esiste lo aggiungiamo
+        else
+        {
+            //Prendo la Car e il Manufacturer dal db
+            Car car= carRepository.findCarById(productDTO.getCar_id());
+            Manufacturer manufacturer=manufacturerRepository.findManufacturerById(productDTO.getManufacturer_id());
+            Product p_db = ProductMapper.convertToEntity(productDTO,car,manufacturer);
+            productRepository.save(p_db);
+            return ProductMapper.convertToDTO(p_db);
 
-        Product p= productCreate(product);
-        productRepository.save(p);
-        return p;
+        }
 
     }
 
-    private Product productCreate(Product product)
-    {
-        Product p = new Product();
-        p.setName(product.getName());
-        p.setBarCode(product.getBarCode().trim().toUpperCase());
-        p.setDescription(product.getDescription());
-        p.setPrice(product.getPrice());
-        p.setQuantity(product.getQuantity());
-        return p;
-
-    }*/
 
     //TODO passare il CarDTO al posto di Car
     public List<Product> getAllProductsOfCar(Car car, int pageNumber, int pageSize, String sortBy)

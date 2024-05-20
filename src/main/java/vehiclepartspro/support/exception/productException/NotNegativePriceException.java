@@ -1,4 +1,4 @@
-package vehiclepartspro.support.exception;
+package vehiclepartspro.support.exception.productException;
 
 public class NotNegativePriceException extends Exception
 {
