@@ -12,7 +12,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "product_in_purchase", schema = "PezziDiRicambio")
+@Table(name = "productInPurchase", schema = "PezziDiRicambio")
 public class ProductInPurchase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

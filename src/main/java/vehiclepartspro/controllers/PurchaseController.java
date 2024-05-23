@@ -26,11 +26,11 @@ public class PurchaseController
     //TODO Controllare funzionamento metodo
     @PostMapping("/buyProducts")
     public ResponseEntity buyProducts(@RequestBody List<ProductDTORequestBuy> products,
-                                      @RequestParam(value="fiscalCode", required = true) String fiscalCode)
+                                      @RequestParam(value="email", required = true) String email)
     {
         try
         {
-            PurchaseDTOResponseBuy purchaseDTOResponseBuy = purchaseService.addPurchases(products,fiscalCode);
+            PurchaseDTOResponseBuy purchaseDTOResponseBuy = purchaseService.addPurchases(products,email);
             return new ResponseEntity<>(purchaseDTOResponseBuy,HttpStatus.OK);
         }
         catch (QuantityProductNotAvaiableException | ProductNotAvaiableException | NotNegativeQuantityException e)
@@ -48,18 +48,18 @@ public class PurchaseController
             @RequestParam(value= "pageNumber", defaultValue = "0") int pageNumber,
             @RequestParam(value = "pageSize", defaultValue= "5") int pageSize,
             @RequestParam(value = "sortBy", defaultValue = "purchaseTime") String sortBy,
-            @RequestParam(value = "fiscalCode", required = true) String fiscalCode)
+            @RequestParam(value = "email", required = true) String email)
     {
         List<PurchaseDTO> retDTO;
         if(fromDate==null || toDate==null) {
-            retDTO = purchaseService.getAllPurchasedProducts(fiscalCode, pageNumber, pageSize, sortBy);
+            retDTO = purchaseService.getAllPurchasedProducts( email, null,null ,  pageNumber,  pageSize, sortBy);
             return new ResponseEntity<>(retDTO, HttpStatus.OK);
         }
         if(fromDate.after(toDate))
         {
             return new ResponseEntity<>("INVALID DATE FORMAT",HttpStatus.BAD_REQUEST);
         }
-        retDTO = purchaseService.getAllPurchasedProducts(fiscalCode, fromDate, toDate, pageNumber, pageSize, sortBy);
+        retDTO = purchaseService.getAllPurchasedProducts(email, fromDate, toDate, pageNumber, pageSize, sortBy);
         return new ResponseEntity<>(retDTO, HttpStatus.OK);
 
     }

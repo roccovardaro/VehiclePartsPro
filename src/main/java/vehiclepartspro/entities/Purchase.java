@@ -33,7 +33,7 @@ public class Purchase
     @JoinColumn(name = "buyer")
     //viene utilizzata per specificare il mapping tra un campo di un'entità e una colonna di una tabella che rappresenta
     //un'altra entità in una relazione di join.
-    private User buyer;
+    private Customer buyer;
 
     @OneToMany(mappedBy = "purchase", cascade = CascadeType.MERGE)
     private List<ProductInPurchase> productsInPurchase;

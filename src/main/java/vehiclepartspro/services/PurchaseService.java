@@ -7,20 +7,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vehiclepartspro.entities.*;
 import vehiclepartspro.entities.DTO.PurchaseDTO.PurchaseDTO;
 import vehiclepartspro.entities.DTO.PurchaseDTO.PurchaseDTOResponseBuy;
 import vehiclepartspro.entities.DTO.mapper.ProductMapper;
 import vehiclepartspro.entities.DTO.mapper.PurchaseMapper;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTORequestBuy;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTOResponseBuy;
-import vehiclepartspro.entities.Product;
-import vehiclepartspro.entities.ProductInPurchase;
-import vehiclepartspro.entities.Purchase;
-import vehiclepartspro.entities.User;
-import vehiclepartspro.repositories.ProductInPurchaseRepository;
-import vehiclepartspro.repositories.ProductRepository;
-import vehiclepartspro.repositories.PurchaseRepository;
-import vehiclepartspro.repositories.UserRepository;
+import vehiclepartspro.repositories.*;
 import vehiclepartspro.support.exception.purchaseException.ProductNotAvaiableException;
 import vehiclepartspro.support.exception.purchaseException.QuantityProductNotAvaiableException;
 import vehiclepartspro.support.exception.purchaseException.NotNegativeQuantityException;
@@ -39,28 +33,31 @@ public class PurchaseService
     @Autowired
     private ProductInPurchaseRepository productInPurchaseRepository;
     @Autowired
+    private CustomerRepository customerRepository;
+    @Autowired
     private UserRepository userRepository;
 
     /**
      *
      * @param productsDTO prodotto da Inserire
-     * @param fiscalCode del cliente che ha effettuato l'ordine
+     * @param email del cliente che ha effettuato l'ordine
      * @return PurchaseDTOResponseBuy -> DTO del Purchase (quando si fa l'acquisto) che contiene i DTO dei prodotti acquistati
      * @throws QuantityProductNotAvaiableException
      * @throws ProductNotAvaiableException
      * @throws NotNegativeQuantityException
      */
     @Transactional(rollbackFor = {Exception.class})
-    public PurchaseDTOResponseBuy addPurchases(List<ProductDTORequestBuy> productsDTO, String fiscalCode) throws QuantityProductNotAvaiableException, ProductNotAvaiableException, NotNegativeQuantityException {
+    public PurchaseDTOResponseBuy addPurchases(List<ProductDTORequestBuy> productsDTO, String email) throws QuantityProductNotAvaiableException, ProductNotAvaiableException, NotNegativeQuantityException {
 
         //prendiamo l'utente dal db
         //TODO fare verifiche sull'utente
 
-        User u_db = userRepository.findByFiscalCode(fiscalCode.trim().toUpperCase());
+        User user_db= userRepository.findByEmail(email.trim());
+        Customer customer_db = customerRepository.findByUser(user_db);
 
         //creo l'acquisto che va fatto e passo il purchase a ogni prodotto da acquistare (in questo acquisto)
         Purchase purchase = new Purchase();
-        purchase.setBuyer(u_db);
+        purchase.setBuyer(customer_db);
         purchase.setPurchaseTime(new Date());
         purchaseRepository.save(purchase);
 
@@ -149,19 +146,20 @@ public class PurchaseService
     }
 
     @Transactional(readOnly = true)
-    public List<PurchaseDTO> getAllPurchasedProducts(String fiscalCode, Date fromDate, Date toDate, int pageNumber, int pageSize,String sortBy)
+    public List<PurchaseDTO> getAllPurchasedProducts(String email, Date fromDate, Date toDate, int pageNumber, int pageSize,String sortBy)
     {
         List<PurchaseDTO> retDTO = new ArrayList<>();
         //mi prendo la lista degli acquisti dell'utente
-        User u_db= userRepository.findByFiscalCode(fiscalCode.trim().toUpperCase());
+        User user_db= userRepository.findByEmail(email.trim());
+        Customer customer_db = customerRepository.findByUser(user_db);
         //creiamo il pageable
         Pageable pageable= PageRequest.of(pageNumber,pageSize,Sort.by(sortBy));
         Page<Purchase> purchases;
         //se sono null prendiamo tutti gli ordini dell'utente
         if (fromDate == null && toDate == null)
-            purchases = purchaseRepository.findByBuyer(u_db,pageable);
+            purchases = purchaseRepository.findByBuyer(customer_db,pageable);
         else
-            purchases=purchaseRepository.findByBuyerAndPurchaseTimeBetween(u_db, fromDate, toDate,pageable);
+            purchases=purchaseRepository.findByBuyerAndPurchaseTimeBetween(customer_db, fromDate, toDate,pageable);
 
         if (purchases.hasContent())
         {

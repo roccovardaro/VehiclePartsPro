@@ -2,18 +2,17 @@ package vehiclepartspro.controllers.request;
 
 import lombok.Getter;
 import vehiclepartspro.entities.Product;
-import vehiclepartspro.entities.User;
+import vehiclepartspro.entities.Customer;
 
-import java.util.Collections;
 import java.util.List;
 
 public final class PurchaseListRequest
 {
     private List<Product> products;
     @Getter
-    private User user;
+    private Customer user;
 
-    public PurchaseListRequest(List<Product> products, User user) {
+    public PurchaseListRequest(List<Product> products, Customer user) {
         this.products = products;
         this.user = user;
     }

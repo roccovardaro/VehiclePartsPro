@@ -12,7 +12,7 @@ public class ProductInPurchaseMapper
         productInPurchaseDTO.setProductId(productInPurchase.getProduct().getId());
         productInPurchaseDTO.setNameProduct(productInPurchase.getProduct().getName());
         productInPurchaseDTO.setQuantity(productInPurchase.getQuantity());
-        productInPurchaseDTO.setManufacturer(productInPurchase.getProduct().getManufacturer().getName());
+        productInPurchaseDTO.setManufacturer(productInPurchase.getProduct().getManufacturer().getUser().getFirstName());
         return productInPurchaseDTO;
     }
 }

@@ -13,10 +13,4 @@ public class ManufacturerDTORequest implements Serializable
     private String telephoneNumber;
     private String address;
 
-    public ManufacturerDTORequest(String name, String email, String telephoneNumber, String address) {
-        this.name = name;
-        this.email = email;
-        this.telephoneNumber = telephoneNumber;
-        this.address = address;
-    }
 }

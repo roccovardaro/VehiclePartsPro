@@ -1,53 +1,43 @@
 package vehiclepartspro.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import vehiclepartspro.entities.enumeration.Role;
 
-import java.util.List;
 
 @Getter
 @Setter
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "user", schema = "PezziDiRicambio")
-public class User {
+@Table(name = "user",schema = "PezziDiRicambio")
+public class User
+{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    @JsonIgnore
-    private int id;
+    private Long id;
 
-    @Basic
-    @Column(name = "fiscal_code", nullable = false, length = 70,unique = true)
-    private String fiscalCode;
-
-    @Basic
-    @Column(name = "first_name", nullable = true, length = 50)
+    @Column(name = "first_name")
     private String firstName;
 
-    @Basic
-    @Column(name = "last_name", nullable = true, length = 50)
+    @Column(name = "last_name")
     private String lastName;
 
-    @Basic
-    @Column(name = "telephone_number", nullable = true, length = 20)
+    @Column(name = "telephone_number", unique = true)
     private String telephoneNumber;
 
-    @Basic
-    @Column(name = "email", nullable = true, length = 90)
+    @Column(name = "email", unique = true)
     private String email;
 
-    @Basic
-    @Column(name = "address", nullable = true, length = 150)
+    @Column(name = "address")
     private String address;
 
-    @OneToMany(mappedBy = "buyer", cascade = CascadeType.MERGE)
-    @JsonIgnore
-    private List<Purchase> purchases;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role;
 
 }
+

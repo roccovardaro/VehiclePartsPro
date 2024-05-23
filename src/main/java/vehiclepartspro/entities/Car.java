@@ -15,7 +15,6 @@ import java.util.List;
 @ToString
 @Entity
 @Table(name = "car", schema = "PezziDiRicambio")
-
 public class Car
 {
 

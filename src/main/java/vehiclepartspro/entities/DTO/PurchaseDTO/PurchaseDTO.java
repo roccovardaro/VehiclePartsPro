@@ -14,7 +14,7 @@ import java.util.List;
 public final class PurchaseDTO implements Serializable
 {
     private int id;
-    private String fiscalCodeBuyer;
+    private String emailBuyer;
     private Date purchaseDate;
     private List<ProductInPurchaseDTO> products= new ArrayList<>();
 

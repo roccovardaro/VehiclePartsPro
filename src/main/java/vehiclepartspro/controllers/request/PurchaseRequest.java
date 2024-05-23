@@ -1,14 +1,14 @@
 package vehiclepartspro.controllers.request;
 
 import vehiclepartspro.entities.Product;
-import vehiclepartspro.entities.User;
+import vehiclepartspro.entities.Customer;
 
 public final class PurchaseRequest
 {
-    private User user;
+    private Customer user;
     private Product product;
 
-    public User getUser() {
+    public Customer getUser() {
         return user;
     }
 
@@ -16,7 +16,7 @@ public final class PurchaseRequest
         return product;
     }
 
-    public PurchaseRequest(User user, Product product) {
+    public PurchaseRequest(Customer user, Product product) {
         this.user = user;
         this.product = product;
     }

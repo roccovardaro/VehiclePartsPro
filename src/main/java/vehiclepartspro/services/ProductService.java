@@ -45,6 +45,7 @@ public class ProductService
      * @throws CarNotFoundException
      * @throws ManufacturerNotFoundException
      */
+
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public ProductDTOResponse addProduct (ProductDTORequestInsert productDTO) throws NotNegativeQuantityException, NotNegativePriceException, CarNotFoundException, ManufacturerNotFoundException {
         //VERIFICHE CAMPI PRODUCTDTO
@@ -86,7 +87,7 @@ public class ProductService
         {
             //Prendo la Car e il Manufacturer dal db
             Car car= carRepository.findCarById(productDTO.getCar_id());
-            Manufacturer manufacturer=manufacturerRepository.findManufacturerById(productDTO.getManufacturer_id());
+            Manufacturer manufacturer=manufacturerRepository.findManufacturerById((long) productDTO.getManufacturer_id());
             Product p_db = ProductMapper.convertToEntity(productDTO,car,manufacturer);
             productRepository.save(p_db);
             return ProductMapper.convertToDTO(p_db);
@@ -94,6 +95,8 @@ public class ProductService
         }
 
     }
+
+
 
 
     //TODO passare il CarDTO al posto di Car
@@ -142,5 +145,7 @@ public class ProductService
        }
 
     }
+
+
 
 }

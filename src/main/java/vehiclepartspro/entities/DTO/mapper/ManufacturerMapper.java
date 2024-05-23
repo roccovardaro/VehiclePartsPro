@@ -9,7 +9,7 @@ public class ManufacturerMapper
     public static ManufacturerDTOResponse convertToDTO(Manufacturer manufacturer)
     {
         ManufacturerDTOResponse manufacturerDTOResponse = new ManufacturerDTOResponse();
-        manufacturerDTOResponse.setName(manufacturer.getName());
+        manufacturerDTOResponse.setName(manufacturer.getUser().getFirstName());
         return manufacturerDTOResponse;
     }
 }
