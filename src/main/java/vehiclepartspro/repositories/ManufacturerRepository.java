@@ -11,4 +11,5 @@ public interface ManufacturerRepository extends JpaRepository<Manufacturer,Integ
     Manufacturer findByUser(User u);
     Manufacturer findById(Long id);
     Manufacturer findManufacturerById(Long id);
+    Manufacturer findByUserEmail(String email);
 }

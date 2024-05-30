@@ -17,7 +17,7 @@ import java.io.Serializable;
 
 public class ProductDTOResponse implements Serializable
 {
-    private String barCode;
+    private int id;
     private String name;
     private double price;
     private String description;

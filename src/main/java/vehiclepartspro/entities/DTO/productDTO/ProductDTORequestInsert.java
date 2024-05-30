@@ -12,12 +12,11 @@ import java.io.Serializable;
 
 public class ProductDTORequestInsert implements Serializable
 {
+    private int id;
     private String name;
-    private String bar_code;
     private String description;
     private float price;
     private int quantity;
     private int car_id;
-    private int manufacturer_id;
 
 }

@@ -16,9 +16,8 @@ import vehiclepartspro.entities.Product;
 import vehiclepartspro.repositories.CarRepository;
 import vehiclepartspro.repositories.ManufacturerRepository;
 import vehiclepartspro.repositories.ProductRepository;
-import vehiclepartspro.support.exception.productException.CarNotFoundException;
-import vehiclepartspro.support.exception.productException.ManufacturerNotFoundException;
-import vehiclepartspro.support.exception.productException.NotNegativePriceException;
+import vehiclepartspro.support.exception.accountingException.QuantityIllegalException;
+import vehiclepartspro.support.exception.productException.*;
 import vehiclepartspro.support.exception.purchaseException.NotNegativeQuantityException;
 
 import java.util.ArrayList;
@@ -34,8 +33,6 @@ public class ProductService
     @Autowired
     private ManufacturerRepository manufacturerRepository;
 
-    //TODO metodi per inserire prodotti nel db
-
     /**
      * Inserisce un prodotto all'interno del db
      * @param productDTO oggettoDTO contenente le informazioni del prodotto da inserire
@@ -47,9 +44,41 @@ public class ProductService
      */
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public ProductDTOResponse addProduct (ProductDTORequestInsert productDTO) throws NotNegativeQuantityException, NotNegativePriceException, CarNotFoundException, ManufacturerNotFoundException {
-        //VERIFICHE CAMPI PRODUCTDTO
-        boolean existProduct= productRepository.existsProductByBarCode(productDTO.getBar_code().trim().toUpperCase());
+    public ProductDTOResponse addProduct (ProductDTORequestInsert productDTO, String emailManufacturer) throws NotNegativeQuantityException, NotNegativePriceException, CarNotFoundException, ManufacturerNotFoundException, IdProductIllegalException, NameProductNotValidException {
+
+        boolean existProduct= productRepository.existsById(productDTO.getId());
+        checkDataAddProduct(productDTO,existProduct);
+
+        //prendiamo il produttore dal db
+        Manufacturer manufacturer= manufacturerRepository.findByUserEmail(emailManufacturer);
+        //Se esiste il prodotto incrementiamo la quantità
+        if(existProduct)
+        {
+            //prodotto del db
+            Product p_db = productRepository.findById(productDTO.getId());
+
+            //VERICHIAMO CHE IL PRODOTTO SIA ASSOCIATO AL MANUFACTURER THIS
+            if (! p_db.getManufacturer().equals(manufacturer))
+            {
+                throw new IdProductIllegalException();
+            }
+
+            p_db.setQuantity(p_db.getQuantity()+productDTO.getQuantity());
+            return ProductMapper.convertToDTO(p_db);
+        }
+        //altrimenti se non esiste lo aggiungiamo
+        else
+        {
+            //Prendo la Car e il Manufacturer dal db
+            Car car= carRepository.findCarById(productDTO.getCar_id());
+            Product p_db = ProductMapper.convertToEntity(productDTO,car,manufacturer);
+            productRepository.save(p_db);
+            return ProductMapper.convertToDTO(p_db);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    protected void checkDataAddProduct(ProductDTORequestInsert productDTO, boolean existProduct) throws NotNegativePriceException, CarNotFoundException, NotNegativeQuantityException, NameProductNotValidException {
 
         if(! existProduct)
         {
@@ -62,9 +91,9 @@ public class ProductService
             {
                 throw new CarNotFoundException();
             }
-            if (! manufacturerRepository.existsById(productDTO.getManufacturer_id()))
+            if(productDTO.getName()==null)
             {
-                throw new ManufacturerNotFoundException();
+                throw new NameProductNotValidException();
             }
         }
         //verifica da fare sia se il prodotto esiste sia se non esiste
@@ -72,37 +101,66 @@ public class ProductService
         {
             throw new NotNegativeQuantityException();
         }
-        //FINE VERIFICHE CAMPI PRODUCTDTO
+    }
 
 
-        if(existProduct)
+    /**
+     * Eliminiamo la {@quantity} del prodotto con {@id}, se la quantità è uguale a
+     * quella presente nel db questo viene eliminato.
+     * @param id prodotto da eliminare
+     * @param quantity del prodotto da eliminare
+     * @param emailUser produttore associato al prodotto
+     * @return String -> "PRODUCT HAS BEEN DELETED"
+     * @throws ProductNotFoundException
+     * @throws IdProductIllegalException
+     */
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public String deleteProduct(int id, int quantity, String emailUser) throws ProductNotFoundException, IdProductIllegalException, QuantityIllegalException
+    {
+        if(quantity<0)
         {
-            //prodotto del db
-            Product p_db = productRepository.findByBarCode(productDTO.getBar_code().trim().toUpperCase());
-            p_db.setQuantity(p_db.getQuantity()+productDTO.getQuantity());
-            return ProductMapper.convertToDTO(p_db);
+            throw new QuantityIllegalException();
         }
-        //altrimenti se non esiste lo aggiungiamo
+
+        if(!productRepository.existsById(id))
+        {
+            throw new ProductNotFoundException();
+        }
+        Product p_db= productRepository.findById(id);
+        //verifichiamo che il prodotto da eliminare sia associato al manufacturer this
+        Manufacturer manufacturer= manufacturerRepository.findByUserEmail(emailUser);
+        if (!p_db.getManufacturer().equals(manufacturer))
+        {
+            throw new IdProductIllegalException();
+        }
+
+        //FINE VERIFICHE
+
+        //ELIMINIAMO IL PRODOTTO IN BASE ALLA QUANTITA'
+
+        int quantity_db= p_db.getQuantity();
+
+        if (quantity== quantity_db)
+        {
+            productRepository.delete(p_db);
+        }
+        else if (quantity< quantity_db)
+        {
+            p_db.setQuantity(quantity_db-quantity);
+        }
         else
         {
-            //Prendo la Car e il Manufacturer dal db
-            Car car= carRepository.findCarById(productDTO.getCar_id());
-            Manufacturer manufacturer=manufacturerRepository.findManufacturerById((long) productDTO.getManufacturer_id());
-            Product p_db = ProductMapper.convertToEntity(productDTO,car,manufacturer);
-            productRepository.save(p_db);
-            return ProductMapper.convertToDTO(p_db);
-
+            throw new QuantityIllegalException();
         }
+        return "PRODUCT HAS BEEN DELETED";
 
     }
 
 
-
-
-    //TODO passare il CarDTO al posto di Car
+    //TODO da rivedere completamente getAllProductsOfCar()
+    /*@Transactional(readOnly = true)
     public List<Product> getAllProductsOfCar(Car car, int pageNumber, int pageSize, String sortBy)
     {
-        //TODO verifiche da fare
 
         //prendo la car dal db
         Car car_db= carRepository.findCarByModelAndYearAndBrand(car.getModel().trim().toUpperCase(), car.getYear(), car.getBrand().trim().toUpperCase());
@@ -118,8 +176,7 @@ public class ProductService
         {
             return new ArrayList<>();
         }
-    }
-
+    }*/
 
     @Transactional(readOnly = true)
     public List<ProductDTOResponse> getAllProductsByName(String name, int pageNumber, int pageSize, String sortBy)

@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import vehiclepartspro.entities.User;
 import vehiclepartspro.services.AccountingService;
 import vehiclepartspro.support.authentication.Utils;
+import vehiclepartspro.support.exception.accountingException.FirstNameNotValidException;
+import vehiclepartspro.support.exception.accountingException.LastNameNotValidException;
 import vehiclepartspro.support.exception.accountingException.MailUserExistsException;
+import vehiclepartspro.support.exception.accountingException.TelephoneNumberNotValidException;
 
 import javax.management.relation.Role;
 import javax.management.relation.RoleNotFoundException;
@@ -43,11 +46,11 @@ public class AccountingController
 
 
     @PostMapping("/saveUser")
-    public ResponseEntity UserSignUp(@RequestBody UserDTO userDTO) throws MailUserExistsException, RoleNotFoundException {
+    public ResponseEntity UserSignUp(@RequestBody UserDTO userDTO)
+    {
         //la mail e il ruolo li prendiamo dal JWT
-        try {
-
-
+        try
+        {
             userDTO.setEmail(Utils.getEmail());
             userDTO.setRole(Utils.getRole().toString());
             UserDTO user = accountingService.UserSave(userDTO);
@@ -60,8 +63,13 @@ public class AccountingController
         catch (RoleNotFoundException e)
         {
             return new ResponseEntity("ROLE_NOT_FOUND", HttpStatus.BAD_REQUEST);
+        } catch (TelephoneNumberNotValidException e) {
+            return new ResponseEntity("TELEPHONE_NUMBER_NOT_VALID", HttpStatus.BAD_REQUEST);
+        } catch (FirstNameNotValidException e) {
+            return new ResponseEntity("FIRST_NAME_NOT_VALID", HttpStatus.BAD_REQUEST);
+        } catch (LastNameNotValidException e) {
+            return new ResponseEntity("LAST_NAME_NOT_VALID", HttpStatus.BAD_REQUEST);
         }
-
 
     }
 

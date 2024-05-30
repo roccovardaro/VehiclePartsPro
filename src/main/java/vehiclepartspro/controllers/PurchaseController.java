@@ -9,6 +9,7 @@ import vehiclepartspro.entities.DTO.PurchaseDTO.PurchaseDTO;
 import vehiclepartspro.entities.DTO.PurchaseDTO.PurchaseDTOResponseBuy;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTORequestBuy;
 import vehiclepartspro.services.PurchaseService;
+import vehiclepartspro.support.authentication.Utils;
 import vehiclepartspro.support.exception.purchaseException.ProductNotAvaiableException;
 import vehiclepartspro.support.exception.purchaseException.QuantityProductNotAvaiableException;
 import vehiclepartspro.support.exception.purchaseException.NotNegativeQuantityException;
@@ -25,12 +26,12 @@ public class PurchaseController
 
     //TODO Controllare funzionamento metodo
     @PostMapping("/buyProducts")
-    public ResponseEntity buyProducts(@RequestBody List<ProductDTORequestBuy> products,
-                                      @RequestParam(value="email", required = true) String email)
+    public ResponseEntity buyProducts(@RequestBody List<ProductDTORequestBuy> products)
     {
         try
         {
-            PurchaseDTOResponseBuy purchaseDTOResponseBuy = purchaseService.addPurchases(products,email);
+            String emailCustomer= Utils.getEmail();
+            PurchaseDTOResponseBuy purchaseDTOResponseBuy = purchaseService.addPurchases(products,emailCustomer);
             return new ResponseEntity<>(purchaseDTOResponseBuy,HttpStatus.OK);
         }
         catch (QuantityProductNotAvaiableException | ProductNotAvaiableException | NotNegativeQuantityException e)

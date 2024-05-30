@@ -18,6 +18,9 @@ public interface ProductRepository extends JpaRepository<Product, Integer>
     boolean existsProductByBarCode(String barCode);
     Page<Product> findAllByCar(Car car, Pageable pageable);
 
+    boolean existsById(int id);
+    Product findById(int id);
+
 
     @Query("Select p from Product p where p.name like ?1")
     Page<Product> findProductsByName(String name, Pageable pageable);

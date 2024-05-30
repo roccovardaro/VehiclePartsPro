@@ -18,7 +18,7 @@ public class ProductMapper
     public static ProductDTOResponse convertToDTO(Product product)
     {
         ProductDTOResponse productDTOResponse = new ProductDTOResponse();
-        productDTOResponse.setBarCode(product.getBarCode());
+        productDTOResponse.setId(product.getId());
         productDTOResponse.setDescription(product.getDescription());
         productDTOResponse.setPrice(product.getPrice());
         productDTOResponse.setName(product.getName());
@@ -34,7 +34,7 @@ public class ProductMapper
     public static Product convertToEntity(ProductDTORequestBuy productDTO)
     {
         Product product = new Product();
-        product.setBarCode(productDTO.getBarCode());
+        product.setId(productDTO.getId());
         product.setQuantity(productDTO.getQuantity());
         return product;
     }
@@ -62,11 +62,17 @@ public class ProductMapper
         return productDTOResponse;
     }
 
+    /**
+     * Convertiamo il DTO nel prodotto da inserire nel database
+     * @param productDTO
+     * @param car
+     * @param manufacturer
+     * @return
+     */
     public static Product convertToEntity(ProductDTORequestInsert productDTO, Car car, Manufacturer manufacturer)
     {
         Product product = new Product();
         product.setName(productDTO.getName());
-        product.setBarCode(productDTO.getBar_code());
         product.setDescription(productDTO.getDescription());
         product.setPrice(productDTO.getPrice());
         product.setManufacturer(manufacturer);

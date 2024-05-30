@@ -52,7 +52,7 @@ public class PurchaseService
         //prendiamo l'utente dal db
         //TODO fare verifiche sull'utente
 
-        User user_db= userRepository.findByEmail(email.trim());
+        User user_db= userRepository.findByEmail(email);
         Customer customer_db = customerRepository.findByUser(user_db);
 
         //creo l'acquisto che va fatto e passo il purchase a ogni prodotto da acquistare (in questo acquisto)
@@ -90,7 +90,7 @@ public class PurchaseService
      * @throws ProductNotAvaiableException
      * @throws QuantityProductNotAvaiableException
      */
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = false,rollbackFor ={Exception.class})
     protected Product addProductInPurchase(Product p, Purchase purchase) throws NotNegativeQuantityException, ProductNotAvaiableException, QuantityProductNotAvaiableException {
         //prendiamo il prodotto dal db
 
@@ -99,13 +99,13 @@ public class PurchaseService
             throw new NotNegativeQuantityException(p);
         }
 
-        if(!productRepository.existsProductByBarCode(p.getBarCode().trim().toUpperCase()))
+        if(!productRepository.existsById(p.getId()))
         {
             throw new ProductNotAvaiableException(p);
         }
 
         //prendo il prodotto dal db
-        Product p_db = productRepository.findByBarCode(p.getBarCode().trim().toUpperCase());
+        Product p_db = productRepository.findById(p.getId());
 
 
         //verifico che il prodotto sia disponibile con il codice del prodotto nel db e la quantità del prodotto

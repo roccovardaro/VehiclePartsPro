@@ -12,8 +12,10 @@ import vehiclepartspro.entities.enumeration.Role;
 import vehiclepartspro.repositories.CustomerRepository;
 import vehiclepartspro.repositories.ManufacturerRepository;
 import vehiclepartspro.repositories.UserRepository;
-import vehiclepartspro.support.exception.accountingException.FiscalCodeUserExistsException;
+import vehiclepartspro.support.exception.accountingException.LastNameNotValidException;
 import vehiclepartspro.support.exception.accountingException.MailUserExistsException;
+import vehiclepartspro.support.exception.accountingException.FirstNameNotValidException;
+import vehiclepartspro.support.exception.accountingException.TelephoneNumberNotValidException;
 
 
 @Service
@@ -27,10 +29,10 @@ public class AccountingService
     private ManufacturerRepository manufacturerRepository;
 
 
-    public UserDTO UserSave(UserDTO userDTO) throws MailUserExistsException
-    {
+    @Transactional(readOnly = false, rollbackFor = Exception.class)
+    public UserDTO UserSave(UserDTO userDTO) throws MailUserExistsException, TelephoneNumberNotValidException, FirstNameNotValidException, LastNameNotValidException {
 
-        checkData(userDTO);
+        checkDataUserSave(userDTO);
 
         User user = UserMapper.convertDTOtoEntity(userDTO);
 
@@ -47,7 +49,6 @@ public class AccountingService
         //sicuramente sarà un manufacturer perchè la verifica del ruolo la facciamo nel metodo
         //utils.getRole()
         else
-
         {
             Manufacturer manufacturer= new Manufacturer();
             manufacturer.setUser(user);
@@ -57,13 +58,32 @@ public class AccountingService
         return userDTO;
     }
 
-    private void checkData(UserDTO userDTO) throws MailUserExistsException
-    {
+    /**
+     * Metodo per verificare i dati dell'utente( ad esclusione di mail e role presi da server keycloak)
+     * Applica il trim sui campi stringhe per rimuovere gli spazi vuoti
+     * @param userDTO
+     * @throws MailUserExistsException
+     */
+
+    @Transactional(readOnly = true)
+    protected void checkDataUserSave(UserDTO userDTO) throws FirstNameNotValidException, LastNameNotValidException, TelephoneNumberNotValidException, MailUserExistsException {
         if(userRepository.existsByEmail(userDTO.getEmail()))
         {
             throw new MailUserExistsException();
         }
-        //TODO altre verifiche da aggiungere
+        if(userDTO.getTelephoneNumber()==null || userRepository.existsByTelephoneNumber(userDTO.getTelephoneNumber()))
+        {
+            throw new TelephoneNumberNotValidException();
+        }
 
+        //TODO altre verifiche da aggiungere
+        if(userDTO.getFirstName()==null)
+        {
+            throw new FirstNameNotValidException();
+        }
+        if(userDTO.getLastName()==null)
+        {
+            throw new LastNameNotValidException();
+        }
     }
 }

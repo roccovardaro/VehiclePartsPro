@@ -21,13 +21,16 @@ public class WebSecurityConfig {
     private final JwtAuthConverter jwtAuthConverter;
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception
+    {
 
         http.
                 authorizeHttpRequests(auth ->
                 {
-                    auth.requestMatchers(HttpMethod.GET, "/users/prova").hasRole(MANUFACTURER);
-                    auth.requestMatchers(HttpMethod.GET, "/users/saveUser").hasAnyRole(MANUFACTURER,CUSTOMER);
+                    auth.requestMatchers(HttpMethod.GET, "/users/**").hasAnyRole(MANUFACTURER,CUSTOMER);
+                    auth.requestMatchers(HttpMethod.POST,"/product/addProduct").hasRole(MANUFACTURER);
+                    auth.requestMatchers(HttpMethod.POST, "/purchases/buyProducts").hasRole(CUSTOMER);
+                    auth.requestMatchers(HttpMethod.GET,"/product/getAllProducts").permitAll();
                     auth.anyRequest().authenticated();
                 });
 
@@ -42,4 +45,6 @@ public class WebSecurityConfig {
 
         return http.build();
     }
+
+
 }

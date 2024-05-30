@@ -9,9 +9,9 @@ import vehiclepartspro.entities.DTO.productDTO.ProductDTORequestInsert;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTOResponse;
 import vehiclepartspro.entities.Product;
 import vehiclepartspro.services.ProductService;
-import vehiclepartspro.support.exception.productException.CarNotFoundException;
-import vehiclepartspro.support.exception.productException.ManufacturerNotFoundException;
-import vehiclepartspro.support.exception.productException.NotNegativePriceException;
+import vehiclepartspro.support.authentication.Utils;
+import vehiclepartspro.support.exception.accountingException.QuantityIllegalException;
+import vehiclepartspro.support.exception.productException.*;
 import vehiclepartspro.support.exception.purchaseException.NotNegativeQuantityException;
 
 import java.util.List;
@@ -23,7 +23,8 @@ public class ProductController
     @Autowired
     private ProductService productService;
 
-    //da rivedere
+    //TODO da rivedere
+    /*
     @GetMapping("/byCar")
     public ResponseEntity getAllProductsOfCar(@RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
                                               @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
@@ -42,14 +43,15 @@ public class ProductController
     {
         List<ProductDTOResponse> productsDTO = productService.getAllProductsByName(name, pageNumber, pageSize, sortBy);
         return new ResponseEntity(productsDTO, HttpStatus.OK);
-    }
+    }*/
 
     @PostMapping("/addProduct")
-    public ResponseEntity addProductForBuy(@RequestBody ProductDTORequestInsert productDTO)
+    public ResponseEntity addProduct(@RequestBody ProductDTORequestInsert productDTO)
     {
         try
         {
-            ProductDTOResponse productDTOResponse= productService.addProduct(productDTO);
+            String email= Utils.getEmail();
+            ProductDTOResponse productDTOResponse= productService.addProduct(productDTO,email);
             return new ResponseEntity(productDTOResponse, HttpStatus.OK);
         }
         catch (NotNegativeQuantityException e)
@@ -68,6 +70,46 @@ public class ProductController
         {
             return new ResponseEntity("MANUFACTURER_NOT_FOUND_EXCEPTION", HttpStatus.BAD_REQUEST);
         }
+        catch (NameProductNotValidException e)
+        {
+            return new ResponseEntity("NAME_PRODUCT_NOT_VALID_EXCEPTION", HttpStatus.BAD_REQUEST);
+            
+        }
+        catch (IdProductIllegalException e)
+        {
+           return new ResponseEntity("ID_PRODUCT_ILLEGAL_EXCEPTION",HttpStatus.FORBIDDEN);
+        }
+    }
+    @PostMapping("/deleteProduct")
+    public ResponseEntity deleteProduct(@RequestParam(value = "id",required = true) int id,
+                                        @RequestParam(value = "quantity", required = true) int quantity)
+    {
+        try
+        {
+            String emailUser= Utils.getEmail();
+            String ret=productService.deleteProduct(id,quantity,emailUser);
+            return new ResponseEntity(ret,HttpStatus.OK);
+        } catch (QuantityIllegalException e)
+        {
+            return new ResponseEntity("QUANTITY_ILLEGAL_EXCEPTION",HttpStatus.BAD_REQUEST);
+        } catch (IdProductIllegalException e)
+        {
+            return new ResponseEntity("ID_PRODUCT_ILLEGAL_EXCEPTION",HttpStatus.FORBIDDEN);
+        } catch (ProductNotFoundException e)
+        {
+            return new ResponseEntity("PRODUCT_NOT_FOUND_EXCEPTION",HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/getAllProducts")
+    public ResponseEntity getAllProducts(@RequestParam(value = "name", required = true)String name,
+                                          @RequestParam(value="pageNumber", defaultValue = "0") int pageNumber,
+                                          @RequestParam(value= "pageSize", defaultValue = "5")int pageSize,
+                                          @RequestParam(value="sortBy",defaultValue = "name") String sortBy)
+    {
+
+        List<ProductDTOResponse> ret= productService.getAllProductsByName(name, pageNumber, pageSize, sortBy);
+        return new ResponseEntity(ret,HttpStatus.OK);
     }
 
 

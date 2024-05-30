@@ -14,12 +14,12 @@ import java.io.Serializable;
 public class ProductDTORequestBuy implements Serializable
 {
 
-    private String barCode;
+    private int id;
     private int quantity;
 
-    public ProductDTORequestBuy(String barCode, int quantity)
+    public ProductDTORequestBuy(int id, int quantity)
     {
-        this.barCode = barCode;
+        this.id = id;
         this.quantity = quantity;
     }
 }
