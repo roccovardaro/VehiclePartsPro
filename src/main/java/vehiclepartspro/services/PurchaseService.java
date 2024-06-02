@@ -77,6 +77,7 @@ public class PurchaseService
             purchaseDTOResponseBuy.getProducts().add(productDTOResponseBuy);
             //metto la quantità acquistata dell'oggetto
         }
+        //TODO possibile inserire prezzo totale acquisto
         purchaseDTOResponseBuy.setTotal_price(total_price);
         return purchaseDTOResponseBuy;
     }
@@ -140,20 +141,21 @@ public class PurchaseService
 
 
     @Transactional(readOnly = true)
-    public List<PurchaseDTO> getAllPurchasedProducts(String fiscalCode,int pageNumber, int pageSize, String sortBy)
+    public List<PurchaseDTO> getAllPurchasedProducts(String email,int pageNumber, int pageSize, String sortBy, String direction)
     {
-        return getAllPurchasedProducts(fiscalCode,null,null,pageNumber,pageSize,sortBy);
+        return getAllPurchasedProducts(email,null,null,pageNumber,pageSize,sortBy,direction);
     }
 
     @Transactional(readOnly = true)
-    public List<PurchaseDTO> getAllPurchasedProducts(String email, Date fromDate, Date toDate, int pageNumber, int pageSize,String sortBy)
+    public List<PurchaseDTO> getAllPurchasedProducts(String email, Date fromDate, Date toDate, int pageNumber, int pageSize,String sortBy,String direction)
     {
         List<PurchaseDTO> retDTO = new ArrayList<>();
         //mi prendo la lista degli acquisti dell'utente
-        User user_db= userRepository.findByEmail(email.trim());
+        User user_db= userRepository.findByEmail(email);
         Customer customer_db = customerRepository.findByUser(user_db);
-        //creiamo il pageable
-        Pageable pageable= PageRequest.of(pageNumber,pageSize,Sort.by(sortBy));
+        //creiamo il pageable e stabiliamo direzione ordinamento
+        Sort.Direction directionSort= directionTransform(direction);
+        Pageable pageable= PageRequest.of(pageNumber,pageSize,Sort.by(directionSort,sortBy));
         Page<Purchase> purchases;
         //se sono null prendiamo tutti gli ordini dell'utente
         if (fromDate == null && toDate == null)
@@ -172,6 +174,19 @@ public class PurchaseService
             return retDTO;
         }
         return new ArrayList<>();
+    }
+
+    private Sort.Direction directionTransform(String direction)
+    {
+        if(direction.equalsIgnoreCase("Ascending") || direction.equalsIgnoreCase("A"))
+        {
+            return Sort.Direction.ASC;
+        }
+        else if (direction.equalsIgnoreCase("Discending") || direction.equalsIgnoreCase("D"))
+        {
+            return Sort.Direction.DESC;
+        }
+        return Sort.Direction.DESC;
     }
 
 

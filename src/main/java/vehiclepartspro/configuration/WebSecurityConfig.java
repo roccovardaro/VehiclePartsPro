@@ -29,7 +29,7 @@ public class WebSecurityConfig {
                 {
                     auth.requestMatchers(HttpMethod.GET, "/users/**").hasAnyRole(MANUFACTURER,CUSTOMER);
                     auth.requestMatchers(HttpMethod.POST,"/product/addProduct").hasRole(MANUFACTURER);
-                    auth.requestMatchers(HttpMethod.POST, "/purchases/buyProducts").hasRole(CUSTOMER);
+                    auth.requestMatchers(HttpMethod.POST, "/purchases/**").hasRole(CUSTOMER);
                     auth.requestMatchers(HttpMethod.GET,"/product/getAllProducts").permitAll();
                     auth.anyRequest().authenticated();
                 });

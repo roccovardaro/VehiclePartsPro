@@ -79,6 +79,11 @@ public class ProductController
         {
            return new ResponseEntity("ID_PRODUCT_ILLEGAL_EXCEPTION",HttpStatus.FORBIDDEN);
         }
+        catch (Exception e)
+        {
+            return new ResponseEntity("GENERAL_ERROR",HttpStatus.BAD_REQUEST);
+
+        }
     }
     @PostMapping("/deleteProduct")
     public ResponseEntity deleteProduct(@RequestParam(value = "id",required = true) int id,

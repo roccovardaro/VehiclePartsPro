@@ -49,19 +49,29 @@ public class PurchaseController
             @RequestParam(value= "pageNumber", defaultValue = "0") int pageNumber,
             @RequestParam(value = "pageSize", defaultValue= "5") int pageSize,
             @RequestParam(value = "sortBy", defaultValue = "purchaseTime") String sortBy,
-            @RequestParam(value = "email", required = true) String email)
+            @RequestParam (value = "direction",defaultValue = "A") String direction)
     {
-        List<PurchaseDTO> retDTO;
-        if(fromDate==null || toDate==null) {
-            retDTO = purchaseService.getAllPurchasedProducts( email, null,null ,  pageNumber,  pageSize, sortBy);
+        try
+        {
+
+
+            String email = Utils.getEmail();
+            List<PurchaseDTO> retDTO;
+            if (fromDate == null || toDate == null) {
+                retDTO = purchaseService.getAllPurchasedProducts(email, pageNumber, pageSize, sortBy, direction);
+                return new ResponseEntity<>(retDTO, HttpStatus.OK);
+            }
+            if (fromDate.after(toDate)) {
+                return new ResponseEntity<>("INVALID DATE FORMAT", HttpStatus.BAD_REQUEST);
+            }
+            retDTO = purchaseService.getAllPurchasedProducts(email, fromDate, toDate, pageNumber, pageSize, sortBy, direction);
             return new ResponseEntity<>(retDTO, HttpStatus.OK);
         }
-        if(fromDate.after(toDate))
+        catch (Exception e)
         {
-            return new ResponseEntity<>("INVALID DATE FORMAT",HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("GENERAL_ERROR", HttpStatus.BAD_REQUEST);
+
         }
-        retDTO = purchaseService.getAllPurchasedProducts(email, fromDate, toDate, pageNumber, pageSize, sortBy);
-        return new ResponseEntity<>(retDTO, HttpStatus.OK);
 
     }
 

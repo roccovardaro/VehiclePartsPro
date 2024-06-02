@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import vehiclepartspro.entities.Car;
 import vehiclepartspro.repositories.CarRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 

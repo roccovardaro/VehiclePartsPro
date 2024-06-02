@@ -27,8 +27,7 @@ public class AccountingService
     private CustomerRepository customerRepository;
     @Autowired
     private ManufacturerRepository manufacturerRepository;
-
-
+    
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public UserDTO UserSave(UserDTO userDTO) throws MailUserExistsException, TelephoneNumberNotValidException, FirstNameNotValidException, LastNameNotValidException {
 

@@ -14,7 +14,6 @@ public class PurchaseMapper
         PurchaseDTO purchaseDTO = new PurchaseDTO();
         purchaseDTO.setId(purchase.getId());
         purchaseDTO.setPurchaseDate(purchase.getPurchaseTime());
-        purchaseDTO.setEmailBuyer(purchase.getBuyer().getUser().getEmail());
 
         List<ProductInPurchase> products = purchase.getProductsInPurchase();
         for (ProductInPurchase productInPurchase : products)
