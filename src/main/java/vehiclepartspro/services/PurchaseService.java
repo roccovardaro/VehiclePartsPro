@@ -71,13 +71,13 @@ public class PurchaseService
         {
 
             Product p_db = addProductInPurchase(p,purchase);
-            total_price+=p_db.getPrice();
+            total_price+=p_db.getPrice()*p.getQuantity();
             //creo il DTO
             ProductDTOResponseBuy productDTOResponseBuy = ProductMapper.convertToDTO(p_db,p.getQuantity());
             purchaseDTOResponseBuy.getProducts().add(productDTOResponseBuy);
             //metto la quantità acquistata dell'oggetto
         }
-        //TODO possibile inserire prezzo totale acquisto
+        purchase.setTotalPrice(total_price);
         purchaseDTOResponseBuy.setTotal_price(total_price);
         return purchaseDTOResponseBuy;
     }
@@ -97,12 +97,12 @@ public class PurchaseService
 
         if(p.getQuantity()<0)
         {
-            throw new NotNegativeQuantityException(p);
+            throw new NotNegativeQuantityException();
         }
 
         if(!productRepository.existsById(p.getId()))
         {
-            throw new ProductNotAvaiableException(p);
+            throw new ProductNotAvaiableException();
         }
 
         //prendo il prodotto dal db

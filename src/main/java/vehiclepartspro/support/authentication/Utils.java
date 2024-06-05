@@ -4,8 +4,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import vehiclepartspro.entities.enumeration.Role;
+import vehiclepartspro.support.exception.accountingException.RoleNotFoundException;
 
-import javax.management.relation.RoleNotFoundException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

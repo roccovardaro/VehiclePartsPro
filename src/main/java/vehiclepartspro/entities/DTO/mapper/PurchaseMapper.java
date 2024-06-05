@@ -14,6 +14,7 @@ public class PurchaseMapper
         PurchaseDTO purchaseDTO = new PurchaseDTO();
         purchaseDTO.setId(purchase.getId());
         purchaseDTO.setPurchaseDate(purchase.getPurchaseTime());
+        purchaseDTO.setTotalPrice(purchase.getTotalPrice());
 
         List<ProductInPurchase> products = purchase.getProductsInPurchase();
         for (ProductInPurchase productInPurchase : products)

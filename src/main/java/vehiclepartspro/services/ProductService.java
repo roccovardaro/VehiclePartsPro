@@ -204,5 +204,28 @@ public class ProductService
     }
 
 
+    @Transactional(readOnly = true)
+    public List<ProductDTOResponse> getAllProductsByCar( String brand, int pageNumber, int pageSize, String sortBy)
+    {
+        List<ProductDTOResponse>retProductDTO= new ArrayList<>();
+        Pageable page= PageRequest.of(pageNumber,pageSize, Sort.by(sortBy));
+        String searchTerm= "%"+brand+"%";
+        Page<Product> pageResult= productRepository.findProductsByName(searchTerm,page);
 
+        if(pageResult.hasContent())
+        {
+            List<Product> products = pageResult.getContent();
+            for(Product product: products)
+            {
+                ProductDTOResponse productDTOResponse = ProductMapper.convertToDTO(product);
+                retProductDTO.add(productDTOResponse);
+            }
+            return retProductDTO;
+        }
+        else
+        {
+            return new ArrayList<>();
+        }
+
+    }
 }

@@ -14,8 +14,6 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Integer>
 {
 
-    Product findByBarCode(String barCode);
-    boolean existsProductByBarCode(String barCode);
     Page<Product> findAllByCar(Car car, Pageable pageable);
 
     boolean existsById(int id);
@@ -24,6 +22,12 @@ public interface ProductRepository extends JpaRepository<Product, Integer>
 
     @Query("Select p from Product p where p.name like ?1")
     Page<Product> findProductsByName(String name, Pageable pageable);
+
+    @Query("Select p from Product p where p.car.brand like ?1")
+    Page<Product> findProductsByBrandCar(String brand, Pageable pageable);
+
+
+
 
 
 }

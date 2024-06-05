@@ -13,7 +13,6 @@ public class ProductDTOResponseBuy
 {
 
     private int id;
-    private String barCode;
     private String name;
     private double price;
     private int quantity;

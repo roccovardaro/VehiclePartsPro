@@ -29,6 +29,10 @@ public class Purchase
     @Column(name = "purchase_time")
     private Date purchaseTime;
 
+    @Basic
+    @Column(name = "total_price")
+    private double totalPrice;
+
     @ManyToOne
     @JoinColumn(name = "buyer")
     //viene utilizzata per specificare il mapping tra un campo di un'entità e una colonna di una tabella che rappresenta

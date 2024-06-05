@@ -54,7 +54,6 @@ public class ProductMapper
     public static ProductDTOResponseBuy convertToDTO(Product product, int quantity_purchase)
     {
         ProductDTOResponseBuy productDTOResponse = new ProductDTOResponseBuy();
-        productDTOResponse.setBarCode(product.getBarCode());
         productDTOResponse.setQuantity(quantity_purchase);
         productDTOResponse.setPrice(product.getPrice());
         productDTOResponse.setName(product.getName());

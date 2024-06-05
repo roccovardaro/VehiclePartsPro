@@ -4,10 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import vehiclepartspro.entities.Car;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTORequestInsert;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTOResponse;
-import vehiclepartspro.entities.Product;
 import vehiclepartspro.services.ProductService;
 import vehiclepartspro.support.authentication.Utils;
 import vehiclepartspro.support.exception.accountingException.QuantityIllegalException;
@@ -85,7 +83,7 @@ public class ProductController
 
         }
     }
-    @PostMapping("/deleteProduct")
+    @DeleteMapping("/deleteProduct")
     public ResponseEntity deleteProduct(@RequestParam(value = "id",required = true) int id,
                                         @RequestParam(value = "quantity", required = true) int quantity)
     {
@@ -104,18 +102,52 @@ public class ProductController
         {
             return new ResponseEntity("PRODUCT_NOT_FOUND_EXCEPTION",HttpStatus.BAD_REQUEST);
         }
+        catch (Exception e)
+        {
+            return new ResponseEntity("GENERAL_ERROR",HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/getAllProducts")
-    public ResponseEntity getAllProducts(@RequestParam(value = "name", required = true)String name,
-                                          @RequestParam(value="pageNumber", defaultValue = "0") int pageNumber,
-                                          @RequestParam(value= "pageSize", defaultValue = "5")int pageSize,
-                                          @RequestParam(value="sortBy",defaultValue = "name") String sortBy)
+    public ResponseEntity getProducts(@RequestParam(value = "name", required = true)String name,
+                                      @RequestParam(value="pageNumber", defaultValue = "0") int pageNumber,
+                                      @RequestParam(value= "pageSize", defaultValue = "5")int pageSize,
+                                      @RequestParam(value="sortBy",defaultValue = "name") String sortBy)
     {
+        try
+        {
 
-        List<ProductDTOResponse> ret= productService.getAllProductsByName(name, pageNumber, pageSize, sortBy);
-        return new ResponseEntity(ret,HttpStatus.OK);
+            List<ProductDTOResponse> ret = productService.getAllProductsByName(name, pageNumber, pageSize, sortBy);
+            return new ResponseEntity(ret, HttpStatus.OK);
+        }
+        catch (Exception e)
+        {
+            return new ResponseEntity("GENERAL_ERROR", HttpStatus.BAD_REQUEST);
+        }
     }
+
+    //TODO fare il metodo getAllPRoductsByCar
+    @GetMapping("/getAllProductsByCar")
+    public ResponseEntity getProductsByCar
+    (
+            @RequestParam(value="pageNumber", defaultValue = "0") int pageNumber,
+            @RequestParam(value= "pageSize", defaultValue = "5")int pageSize,
+            @RequestParam(value="sortBy",defaultValue = "name") String sortBy,
+            @RequestParam(value="brand", required=true) String brand)
+    {
+        try
+        {
+
+            List<ProductDTOResponse> ret = productService.getAllProductsByCar(brand, pageNumber, pageSize, sortBy);
+            return new ResponseEntity(ret, HttpStatus.OK);
+        }
+        catch (Exception e)
+        {
+            return new ResponseEntity("GENERAL_ERROR", HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
 
 
 

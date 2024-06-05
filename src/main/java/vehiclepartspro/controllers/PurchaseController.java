@@ -24,7 +24,6 @@ public class PurchaseController
     @Autowired
     private PurchaseService purchaseService;
 
-    //TODO Controllare funzionamento metodo
     @PostMapping("/buyProducts")
     public ResponseEntity buyProducts(@RequestBody List<ProductDTORequestBuy> products)
     {

@@ -15,6 +15,7 @@ public final class PurchaseDTO implements Serializable
 {
     private int id;
     private Date purchaseDate;
+    private double totalPrice;
     private List<ProductInPurchaseDTO> products= new ArrayList<>();
 
 

@@ -5,16 +5,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import vehiclepartspro.entities.DTO.userDTO.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import vehiclepartspro.entities.User;
 import vehiclepartspro.services.AccountingService;
 import vehiclepartspro.support.authentication.Utils;
-import vehiclepartspro.support.exception.accountingException.FirstNameNotValidException;
-import vehiclepartspro.support.exception.accountingException.LastNameNotValidException;
-import vehiclepartspro.support.exception.accountingException.MailUserExistsException;
-import vehiclepartspro.support.exception.accountingException.TelephoneNumberNotValidException;
+import vehiclepartspro.support.exception.accountingException.*;
 
-import javax.management.relation.Role;
-import javax.management.relation.RoleNotFoundException;
 
 @RestController
 @RequestMapping("/users")
@@ -70,9 +64,11 @@ public class AccountingController
         } catch (LastNameNotValidException e) {
             return new ResponseEntity("LAST_NAME_NOT_VALID", HttpStatus.BAD_REQUEST);
         }
-
+        catch (Exception e)
+        {
+            return new ResponseEntity("GENERAL_ERROR", HttpStatus.BAD_REQUEST);
+        }
     }
-
 
     @GetMapping("/prova")
     public String ProvaSecurityOauth() throws RoleNotFoundException

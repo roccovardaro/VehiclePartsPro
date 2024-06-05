@@ -11,16 +11,4 @@ public class QuantityProductNotAvaiableException extends Exception
 
     public QuantityProductNotAvaiableException()
     {}
-
-
-    private static String messageCostruction(Product p)
-    {
-        StringBuilder sb=new StringBuilder();
-        sb.append("QuantityProductNotAvaiableException \n");
-        sb.append("Product name: ").append(p.getName()).append("\n");
-        sb.append("Product barCode: ").append(p.getBarCode()).append("\n");
-        sb.append("is not avaiable");
-        return sb.toString();
-
-    }
 }

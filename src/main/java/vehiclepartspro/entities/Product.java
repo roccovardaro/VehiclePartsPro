@@ -25,12 +25,8 @@ public class Product
     private int id;
 
     @Basic
-    @Column(name = "name", nullable = true, length = 50)
+    @Column(name = "name", nullable = true, length = 50,unique = true)
     private String name;
-
-    @Basic
-    @Column(name = "bar_code", nullable = true,length = 10,unique = true)
-    private String barCode;
 
     @Basic
     @Column(name = "description", nullable = true, length = 500)
