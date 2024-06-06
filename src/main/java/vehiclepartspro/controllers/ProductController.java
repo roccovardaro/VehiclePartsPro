@@ -138,7 +138,7 @@ public class ProductController
         try
         {
 
-            List<ProductDTOResponse> ret = productService.getAllProductsByCar(brand, pageNumber, pageSize, sortBy);
+            List<ProductDTOResponse> ret = productService.getAllProductsByCarBrand(brand, pageNumber, pageSize, sortBy);
             return new ResponseEntity(ret, HttpStatus.OK);
         }
         catch (Exception e)

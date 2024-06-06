@@ -1,6 +1,7 @@
 package vehiclepartspro.controllers;
 
 
+import org.apache.http.protocol.HTTP;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,16 +21,10 @@ public class CarController
     //TODO da rivedere
     @Autowired
     CarService carService;
-    @GetMapping("/brand")
-    public ResponseEntity<List<Car>> CarsByBrand(@RequestParam() String brand)
+
+    @GetMapping("/allBrand")
+    public ResponseEntity allBrandOfCar()
     {
-        List<Car> cars= carService.allCarByBrand(brand);
-        return new ResponseEntity<>(cars, HttpStatus.OK);
-    }
-    @GetMapping("/all")
-    public ResponseEntity<List<Car>> allCars()
-    {
-        List<Car> allCars = carService.AllCars();
-        return new ResponseEntity<>(allCars, HttpStatus.OK);
+        return new ResponseEntity<>(carService.allModel(), HttpStatus.OK);
     }
 }

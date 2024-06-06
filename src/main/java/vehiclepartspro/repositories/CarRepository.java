@@ -1,6 +1,7 @@
 package vehiclepartspro.repositories;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import vehiclepartspro.entities.Car;
 
@@ -15,4 +16,6 @@ public interface CarRepository extends JpaRepository<Car, Integer>
     Car findCarByModelAndYearAndBrand(String model, int year, String brand);
     boolean existsCarById(int id);
     Car findCarById(int id);
+    @Query("SELECT c.brand FROM Car c")
+    List<String> findAllModel();
 }

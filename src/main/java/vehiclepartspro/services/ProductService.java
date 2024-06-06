@@ -205,12 +205,12 @@ public class ProductService
 
 
     @Transactional(readOnly = true)
-    public List<ProductDTOResponse> getAllProductsByCar( String brand, int pageNumber, int pageSize, String sortBy)
+    public List<ProductDTOResponse> getAllProductsByCarBrand(String brand, int pageNumber, int pageSize, String sortBy)
     {
         List<ProductDTOResponse>retProductDTO= new ArrayList<>();
         Pageable page= PageRequest.of(pageNumber,pageSize, Sort.by(sortBy));
-        String searchTerm= "%"+brand+"%";
-        Page<Product> pageResult= productRepository.findProductsByName(searchTerm,page);
+        String searchTerm= brand;
+        Page<Product> pageResult= productRepository.findProductsByBrandCar(searchTerm,page);
 
         if(pageResult.hasContent())
         {

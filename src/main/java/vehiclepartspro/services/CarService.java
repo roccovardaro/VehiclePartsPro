@@ -44,4 +44,14 @@ public class CarService
     {
         return carRepository.findAll();
     }
+
+    public List<String> allModel()
+    {
+        List<String>models= carRepository.findAllModel();
+        if(models.isEmpty())
+        {
+            return new ArrayList<>();
+        }
+        return models;
+    }
 }
