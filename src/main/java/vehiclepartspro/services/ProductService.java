@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import vehiclepartspro.entities.Car;
 import vehiclepartspro.entities.DTO.mapper.ProductMapper;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTORequestInsert;
@@ -16,10 +17,12 @@ import vehiclepartspro.entities.Product;
 import vehiclepartspro.repositories.CarRepository;
 import vehiclepartspro.repositories.ManufacturerRepository;
 import vehiclepartspro.repositories.ProductRepository;
+import vehiclepartspro.support.HandleFile;
 import vehiclepartspro.support.exception.accountingException.QuantityIllegalException;
 import vehiclepartspro.support.exception.productException.*;
 import vehiclepartspro.support.exception.purchaseException.NotNegativeQuantityException;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,7 +47,7 @@ public class ProductService
      */
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public ProductDTOResponse addProduct (ProductDTORequestInsert productDTO, String emailManufacturer) throws NotNegativeQuantityException, NotNegativePriceException, CarNotFoundException, ManufacturerNotFoundException, IdProductIllegalException, NameProductNotValidException {
+    public ProductDTOResponse addProduct (ProductDTORequestInsert productDTO, String emailManufacturer,MultipartFile file) throws NotNegativeQuantityException, NotNegativePriceException, CarNotFoundException, ManufacturerNotFoundException, IdProductIllegalException, NameProductNotValidException, IOException {
 
         boolean existProduct= productRepository.existsById(productDTO.getId());
         checkDataAddProduct(productDTO,existProduct);
@@ -52,10 +55,12 @@ public class ProductService
         //prendiamo il produttore dal db
         Manufacturer manufacturer= manufacturerRepository.findByUserEmail(emailManufacturer);
         //Se esiste il prodotto incrementiamo la quantità
+
+        Product p_db;
         if(existProduct)
         {
             //prodotto del db
-            Product p_db = productRepository.findById(productDTO.getId());
+            p_db = productRepository.findById(productDTO.getId());
 
             //VERICHIAMO CHE IL PRODOTTO SIA ASSOCIATO AL MANUFACTURER THIS
             if (! p_db.getManufacturer().equals(manufacturer))
@@ -64,17 +69,19 @@ public class ProductService
             }
 
             p_db.setQuantity(p_db.getQuantity()+productDTO.getQuantity());
-            return ProductMapper.convertToDTO(p_db);
         }
         //altrimenti se non esiste lo aggiungiamo
         else
         {
             //Prendo la Car e il Manufacturer dal db
             Car car= carRepository.findCarById(productDTO.getCar_id());
-            Product p_db = ProductMapper.convertToEntity(productDTO,car,manufacturer);
+            p_db = ProductMapper.convertToEntity(productDTO,car,manufacturer);
             productRepository.save(p_db);
-            return ProductMapper.convertToDTO(p_db);
+
         }
+        //salva immagine
+        HandleFile.uploadFile(file,p_db.getId());
+        return ProductMapper.convertToDTO(p_db);
     }
 
     @Transactional(readOnly = true)
@@ -143,6 +150,7 @@ public class ProductService
         if (quantity== quantity_db)
         {
             productRepository.delete(p_db);
+            HandleFile.deleteImageProduct(p_db.getId());
         }
         else if (quantity< quantity_db)
         {

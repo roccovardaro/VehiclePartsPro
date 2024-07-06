@@ -17,27 +17,6 @@ public class AccountingController
 
     @Autowired
     private AccountingService accountingService;
-    /*
-    @PostMapping("/save")
-    public ResponseEntity saveUser(@RequestBody UserDTO userDTO)
-    {
-        try
-        {
-            Customer added= accountingService.UserSave(userDTO);
-            return new ResponseEntity<>(added, HttpStatus.OK);
-
-        }
-        catch (FiscalCodeUserExistsException f)
-        {
-            return new ResponseEntity<>("ERROR_FISCAL_CODE_ALREADY_EXISTS", HttpStatus.BAD_REQUEST);
-        }
-        catch (MailUserExistsException m)
-        {
-            return new ResponseEntity<>("ERROR_MAIL_ALREADY_EXISTS", HttpStatus.BAD_REQUEST);
-        }
-
-    }*/
-
 
     @PostMapping("/saveUser")
     public ResponseEntity UserSignUp(@RequestBody UserDTO userDTO)
@@ -68,14 +47,5 @@ public class AccountingController
         {
             return new ResponseEntity("GENERAL_ERROR", HttpStatus.BAD_REQUEST);
         }
-    }
-
-    @GetMapping("/prova")
-    public String ProvaSecurityOauth() throws RoleNotFoundException
-    {
-        System.out.println(Utils.getEmail());
-        System.out.println(Utils.getRole());
-
-        return "accesso consentito";
     }
 }

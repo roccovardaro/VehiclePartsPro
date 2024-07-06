@@ -2,8 +2,10 @@ package vehiclepartspro.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTORequestInsert;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTOResponse;
 import vehiclepartspro.services.ProductService;
@@ -43,13 +45,14 @@ public class ProductController
         return new ResponseEntity(productsDTO, HttpStatus.OK);
     }*/
 
-    @PostMapping("/addProduct")
-    public ResponseEntity addProduct(@RequestBody ProductDTORequestInsert productDTO)
+    @PostMapping(value = "/addProduct", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity addProduct(@RequestPart ProductDTORequestInsert productDTO,
+                                     @RequestPart("productImage")MultipartFile file)
     {
         try
         {
             String email= Utils.getEmail();
-            ProductDTOResponse productDTOResponse= productService.addProduct(productDTO,email);
+            ProductDTOResponse productDTOResponse= productService.addProduct(productDTO,email,file);
             return new ResponseEntity(productDTOResponse, HttpStatus.OK);
         }
         catch (NotNegativeQuantityException e)
