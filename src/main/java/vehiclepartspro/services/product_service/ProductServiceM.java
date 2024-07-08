@@ -1,10 +1,6 @@
-package vehiclepartspro.services;
+package vehiclepartspro.services.product_service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,11 +19,9 @@ import vehiclepartspro.support.exception.productException.*;
 import vehiclepartspro.support.exception.purchaseException.NotNegativeQuantityException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
-public class ProductService
+public class ProductServiceM
 {
     @Autowired
     private ProductRepository productRepository;
@@ -35,6 +29,7 @@ public class ProductService
     private CarRepository carRepository;
     @Autowired
     private ManufacturerRepository manufacturerRepository;
+
 
     /**
      * Inserisce un prodotto all'interno del db
@@ -47,7 +42,7 @@ public class ProductService
      */
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public ProductDTOResponse addProduct (ProductDTORequestInsert productDTO, String emailManufacturer,MultipartFile file) throws NotNegativeQuantityException, NotNegativePriceException, CarNotFoundException, ManufacturerNotFoundException, IdProductIllegalException, NameProductNotValidException, IOException {
+    public ProductDTOResponse addProduct (ProductDTORequestInsert productDTO, String emailManufacturer, MultipartFile file) throws NotNegativeQuantityException, NotNegativePriceException, CarNotFoundException, ManufacturerNotFoundException, IdProductIllegalException, NameProductNotValidException, IOException {
 
         boolean existProduct= productRepository.existsById(productDTO.getId());
         checkDataAddProduct(productDTO,existProduct);
@@ -110,7 +105,6 @@ public class ProductService
         }
     }
 
-
     /**
      * Eliminiamo la {@quantity} del prodotto con {@id}, se la quantità è uguale a
      * quella presente nel db questo viene eliminato.
@@ -164,7 +158,6 @@ public class ProductService
 
     }
 
-
     //TODO da rivedere completamente getAllProductsOfCar()
     /*@Transactional(readOnly = true)
     public List<Product> getAllProductsOfCar(Car car, int pageNumber, int pageSize, String sortBy)
@@ -185,55 +178,4 @@ public class ProductService
             return new ArrayList<>();
         }
     }*/
-
-    @Transactional(readOnly = true)
-    public List<ProductDTOResponse> getAllProductsByName(String name, int pageNumber, int pageSize, String sortBy)
-    {
-        List<ProductDTOResponse>retProductDTO= new ArrayList<>();
-        Pageable page= PageRequest.of(pageNumber,pageSize, Sort.by(sortBy));
-        String searchTerm= "%"+name+"%";
-        Page<Product> pageResult= productRepository.findProductsByName(searchTerm,page);
-
-       if(pageResult.hasContent())
-       {
-           List<Product> products = pageResult.getContent();
-           for(Product product: products)
-           {
-               ProductDTOResponse productDTOResponse = ProductMapper.convertToDTO(product);
-               retProductDTO.add(productDTOResponse);
-           }
-           return retProductDTO;
-       }
-       else
-       {
-           return new ArrayList<>();
-       }
-
-    }
-
-
-    @Transactional(readOnly = true)
-    public List<ProductDTOResponse> getAllProductsByCarBrand(String brand, int pageNumber, int pageSize, String sortBy)
-    {
-        List<ProductDTOResponse>retProductDTO= new ArrayList<>();
-        Pageable page= PageRequest.of(pageNumber,pageSize, Sort.by(sortBy));
-        String searchTerm= brand;
-        Page<Product> pageResult= productRepository.findProductsByBrandCar(searchTerm,page);
-
-        if(pageResult.hasContent())
-        {
-            List<Product> products = pageResult.getContent();
-            for(Product product: products)
-            {
-                ProductDTOResponse productDTOResponse = ProductMapper.convertToDTO(product);
-                retProductDTO.add(productDTOResponse);
-            }
-            return retProductDTO;
-        }
-        else
-        {
-            return new ArrayList<>();
-        }
-
-    }
 }

@@ -29,7 +29,8 @@ public class AccountingService
     private ManufacturerRepository manufacturerRepository;
     
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public UserDTO UserSave(UserDTO userDTO) throws MailUserExistsException, TelephoneNumberNotValidException, FirstNameNotValidException, LastNameNotValidException {
+    public UserDTO UserSave(UserDTO userDTO) throws MailUserExistsException, TelephoneNumberNotValidException, FirstNameNotValidException, LastNameNotValidException
+    {
 
         checkDataUserSave(userDTO);
 
@@ -65,7 +66,8 @@ public class AccountingService
      */
 
     @Transactional(readOnly = true)
-    protected void checkDataUserSave(UserDTO userDTO) throws FirstNameNotValidException, LastNameNotValidException, TelephoneNumberNotValidException, MailUserExistsException {
+    protected void checkDataUserSave(UserDTO userDTO) throws FirstNameNotValidException, LastNameNotValidException, TelephoneNumberNotValidException, MailUserExistsException
+    {
         if(userRepository.existsByEmail(userDTO.getEmail()))
         {
             throw new MailUserExistsException();

@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTORequestInsert;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTOResponse;
-import vehiclepartspro.services.ProductService;
+import vehiclepartspro.services.product_service.ProductServiceC;
+import vehiclepartspro.services.product_service.ProductServiceM;
 import vehiclepartspro.support.authentication.Utils;
 import vehiclepartspro.support.exception.accountingException.QuantityIllegalException;
 import vehiclepartspro.support.exception.productException.*;
@@ -21,29 +22,9 @@ import java.util.List;
 public class ProductController
 {
     @Autowired
-    private ProductService productService;
+    private ProductServiceC productServiceC;
+    private ProductServiceM productServiceM;
 
-    //TODO da rivedere
-    /*
-    @GetMapping("/byCar")
-    public ResponseEntity getAllProductsOfCar(@RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
-                                              @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-                                              @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
-                                              @RequestBody Car car)
-    {
-        List<Product> products= productService.getAllProductsOfCar(car, pageNumber, pageSize, sortBy);
-        return new ResponseEntity(products, HttpStatus.OK);
-    }
-
-    @GetMapping("byName")
-    public ResponseEntity getAllProductsByName(@RequestParam(value = "pageNumber", defaultValue = "0") int pageNumber,
-                                               @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
-                                               @RequestParam(value = "sortBy", defaultValue = "name") String sortBy,
-                                               @RequestParam(value = "name",required = true) String name)
-    {
-        List<ProductDTOResponse> productsDTO = productService.getAllProductsByName(name, pageNumber, pageSize, sortBy);
-        return new ResponseEntity(productsDTO, HttpStatus.OK);
-    }*/
 
     @PostMapping(value = "/addProduct", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity addProduct(@RequestPart ProductDTORequestInsert productDTO,
@@ -52,7 +33,7 @@ public class ProductController
         try
         {
             String email= Utils.getEmail();
-            ProductDTOResponse productDTOResponse= productService.addProduct(productDTO,email,file);
+            ProductDTOResponse productDTOResponse= productServiceM.addProduct(productDTO,email,file);
             return new ResponseEntity(productDTOResponse, HttpStatus.OK);
         }
         catch (NotNegativeQuantityException e)
@@ -86,6 +67,7 @@ public class ProductController
 
         }
     }
+
     @DeleteMapping("/deleteProduct")
     public ResponseEntity deleteProduct(@RequestParam(value = "id",required = true) int id,
                                         @RequestParam(value = "quantity", required = true) int quantity)
@@ -93,7 +75,7 @@ public class ProductController
         try
         {
             String emailUser= Utils.getEmail();
-            String ret=productService.deleteProduct(id,quantity,emailUser);
+            String ret=productServiceM.deleteProduct(id,quantity,emailUser);
             return new ResponseEntity(ret,HttpStatus.OK);
         } catch (QuantityIllegalException e)
         {
@@ -120,7 +102,7 @@ public class ProductController
         try
         {
 
-            List<ProductDTOResponse> ret = productService.getAllProductsByName(name, pageNumber, pageSize, sortBy);
+            List<ProductDTOResponse> ret = productServiceC.getAllProductsByName(name, pageNumber, pageSize, sortBy);
             return new ResponseEntity(ret, HttpStatus.OK);
         }
         catch (Exception e)
@@ -129,7 +111,6 @@ public class ProductController
         }
     }
 
-    //TODO fare il metodo getAllPRoductsByCar
     @GetMapping("/getAllProductsByCar")
     public ResponseEntity getProductsByCar
     (
@@ -141,7 +122,7 @@ public class ProductController
         try
         {
 
-            List<ProductDTOResponse> ret = productService.getAllProductsByCarBrand(brand, pageNumber, pageSize, sortBy);
+            List<ProductDTOResponse> ret = productServiceC.getAllProductsByCarBrand(brand, pageNumber, pageSize, sortBy);
             return new ResponseEntity(ret, HttpStatus.OK);
         }
         catch (Exception e)

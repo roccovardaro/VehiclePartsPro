@@ -139,7 +139,6 @@ public class PurchaseService
         return productQuantity>= quantity;
     }
 
-
     @Transactional(readOnly = true)
     public List<PurchaseDTO> getAllPurchasedProducts(String email,int pageNumber, int pageSize, String sortBy, String direction)
     {
