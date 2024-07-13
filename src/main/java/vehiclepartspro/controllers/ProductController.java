@@ -1,6 +1,9 @@
 package vehiclepartspro.controllers;
 
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,9 @@ import vehiclepartspro.support.exception.accountingException.QuantityIllegalExce
 import vehiclepartspro.support.exception.productException.*;
 import vehiclepartspro.support.exception.purchaseException.NotNegativeQuantityException;
 
+import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -23,10 +29,11 @@ public class ProductController
 {
     @Autowired
     private ProductServiceC productServiceC;
+    @Autowired
     private ProductServiceM productServiceM;
 
 
-    @PostMapping(value = "/addProduct", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    /*@PostMapping(value = "/addProduct", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity addProduct(@RequestPart ProductDTORequestInsert productDTO,
                                      @RequestPart("productImage")MultipartFile file)
     {
@@ -67,6 +74,49 @@ public class ProductController
 
         }
     }
+    */
+    @PostMapping(value = "/addProduct")
+    public ResponseEntity addProduct(@RequestBody ProductDTORequestInsert productDTO)
+    {
+        try
+        {
+            String email= Utils.getEmail();
+            ProductDTOResponse productDTOResponse= productServiceM.addProduct(productDTO,email);
+            return new ResponseEntity(productDTOResponse, HttpStatus.OK);
+        }
+        catch (NotNegativeQuantityException e)
+        {
+            return new ResponseEntity("NOT_NEGATIVE_QUANTITY_EXCEPTION", HttpStatus.BAD_REQUEST);
+        }
+        catch (NotNegativePriceException e)
+        {
+            return new ResponseEntity("NOT_NEGATIVE_PRICE_EXCEPTION", HttpStatus.BAD_REQUEST);
+        }
+        catch (CarNotFoundException e)
+        {
+            return new ResponseEntity("CAR_NOT_FOUND_EXCEPTION", HttpStatus.BAD_REQUEST);
+        }
+        catch (ManufacturerNotFoundException e)
+        {
+            return new ResponseEntity("MANUFACTURER_NOT_FOUND_EXCEPTION", HttpStatus.BAD_REQUEST);
+        }
+        catch (NameProductNotValidException e)
+        {
+            return new ResponseEntity("NAME_PRODUCT_NOT_VALID_EXCEPTION", HttpStatus.BAD_REQUEST);
+
+        }
+        catch (IdProductIllegalException e)
+        {
+           return new ResponseEntity("ID_PRODUCT_ILLEGAL_EXCEPTION",HttpStatus.FORBIDDEN);
+        }
+        catch (Exception e)
+        {
+            return new ResponseEntity("GENERAL_ERROR",HttpStatus.BAD_REQUEST);
+
+        }
+    }
+
+
 
     @DeleteMapping("/deleteProduct")
     public ResponseEntity deleteProduct(@RequestParam(value = "id",required = true) int id,
@@ -111,8 +161,8 @@ public class ProductController
         }
     }
 
-    @GetMapping("/getAllProductsByCar")
-    public ResponseEntity getProductsByCar
+    @GetMapping("/getAllProductsByBrand")
+    public ResponseEntity getProductsByBrand
     (
             @RequestParam(value="pageNumber", defaultValue = "0") int pageNumber,
             @RequestParam(value= "pageSize", defaultValue = "5")int pageSize,
@@ -129,10 +179,36 @@ public class ProductController
         {
             return new ResponseEntity("GENERAL_ERROR", HttpStatus.BAD_REQUEST);
         }
-
     }
 
+    @GetMapping(value = "/image")
+    public ResponseEntity<byte[]> getImage(@RequestParam(value = "idImage", required = false) int idImage) {
+        try {
+            // Costruisce il percorso relativo al file nel classpath
 
+            String imagePath = "/Users/roccopiovardaro/Desktop/Java_Projects/VehiclePartsPro/src/main/java/vehiclepartspro/other/imageProduct/"+idImage+".png";
+            InputStream in = new FileInputStream(imagePath);
 
+            if (in == null) {
+                return new ResponseEntity<>("Image not found".getBytes(), HttpStatus.NOT_FOUND);
+            }
 
+            byte[] imageBytes;
+            try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+                int nRead;
+                byte[] data = new byte[1024];
+                while ((nRead = in.read(data, 0, data.length)) != -1)
+                {
+                    buffer.write(data, 0, nRead);
+                }
+                imageBytes = buffer.toByteArray();
+            }
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_PNG);
+            return new ResponseEntity<>(imageBytes, headers, HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>(("Error loading image: " + e.getMessage()).getBytes(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }

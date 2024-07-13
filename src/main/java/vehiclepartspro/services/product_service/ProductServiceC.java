@@ -7,13 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import vehiclepartspro.entities.*;
 import vehiclepartspro.entities.DTO.mapper.ProductMapper;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTOResponse;
-import vehiclepartspro.entities.Product;
 import vehiclepartspro.repositories.CarRepository;
 import vehiclepartspro.repositories.ManufacturerRepository;
 import vehiclepartspro.repositories.ProductRepository;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +21,6 @@ public class ProductServiceC
 {
     @Autowired
     private ProductRepository productRepository;
-    @Autowired
-    private CarRepository carRepository;
-    @Autowired
-    private ManufacturerRepository manufacturerRepository;
 
     @Transactional(readOnly = true)
     public List<ProductDTOResponse> getAllProductsByName(String name, int pageNumber, int pageSize, String sortBy)

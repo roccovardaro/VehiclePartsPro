@@ -28,8 +28,9 @@ public class WebSecurityConfig {
                 authorizeHttpRequests(auth ->
                 {
                     auth.requestMatchers(HttpMethod.GET,"/product/getAllProducts").permitAll();
+                    auth.requestMatchers(HttpMethod.GET,"/product/image").permitAll();
                     auth.requestMatchers(HttpMethod.GET,"/cars/**").permitAll();
-                    auth.requestMatchers(HttpMethod.GET,"/product/getAllProductsByCar").permitAll();
+                    auth.requestMatchers(HttpMethod.GET,"/product/getAllProductsByBrand").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/users/**").hasAnyRole(MANUFACTURER,CUSTOMER);
                     auth.requestMatchers(HttpMethod.POST,"/product/addProduct").hasRole(MANUFACTURER);
                     auth.requestMatchers(HttpMethod.DELETE,"product/deleteProduct").hasRole(MANUFACTURER);

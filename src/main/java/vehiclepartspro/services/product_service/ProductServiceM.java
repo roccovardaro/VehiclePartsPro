@@ -42,7 +42,7 @@ public class ProductServiceM
      */
 
     @Transactional(readOnly = false, rollbackFor = Exception.class)
-    public ProductDTOResponse addProduct (ProductDTORequestInsert productDTO, String emailManufacturer, MultipartFile file) throws NotNegativeQuantityException, NotNegativePriceException, CarNotFoundException, ManufacturerNotFoundException, IdProductIllegalException, NameProductNotValidException, IOException {
+    public ProductDTOResponse addProduct (ProductDTORequestInsert productDTO, String emailManufacturer) throws NotNegativeQuantityException, NotNegativePriceException, CarNotFoundException, ManufacturerNotFoundException, IdProductIllegalException, NameProductNotValidException, IOException {
 
         boolean existProduct= productRepository.existsById(productDTO.getId());
         checkDataAddProduct(productDTO,existProduct);
@@ -75,7 +75,7 @@ public class ProductServiceM
 
         }
         //salva immagine
-        HandleFile.uploadFile(file,p_db.getId());
+        //HandleFile.uploadFile(file,p_db.getId());
         return ProductMapper.convertToDTO(p_db);
     }
 
