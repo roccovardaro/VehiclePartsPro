@@ -43,12 +43,12 @@ public class PurchaseController
     @GetMapping("/showPurchasedProducts")
     public ResponseEntity showPurchasedProducts
             (
-            @RequestParam(value = "FromDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fromDate,
+            @RequestParam(value = "fromDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fromDate,
             @RequestParam(value = "toDate",required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date toDate,
             @RequestParam(value= "pageNumber", defaultValue = "0") int pageNumber,
             @RequestParam(value = "pageSize", defaultValue= "5") int pageSize,
             @RequestParam(value = "sortBy", defaultValue = "purchaseTime") String sortBy,
-            @RequestParam (value = "direction",defaultValue = "A") String direction)
+            @RequestParam (value = "direction",defaultValue = "D") String direction)
     {
         try
         {

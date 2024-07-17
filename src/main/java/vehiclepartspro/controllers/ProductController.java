@@ -1,14 +1,11 @@
 package vehiclepartspro.controllers;
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTORequestInsert;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTOResponse;
 import vehiclepartspro.services.product_service.ProductServiceC;
@@ -19,8 +16,7 @@ import vehiclepartspro.support.exception.productException.*;
 import vehiclepartspro.support.exception.purchaseException.NotNegativeQuantityException;
 
 import java.io.*;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
 import java.util.List;
 
 @RestController

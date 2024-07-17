@@ -26,12 +26,10 @@ public class Utils
     {
         JwtAuthenticationToken authenticationToken = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
         Jwt jwt = (Jwt) authenticationToken.getCredentials();
-        Map<String, Object> map= jwt.getClaim("resource_access");
-        Map<String,Object> User_VPP= (Map<String, Object>) map.get("User_VPP_id");
-        //per come fatta l'applicazione uno puo avere un singolo ruolo
-        //restituisce quindi una lista costituita da un singolo elemento
-        List<String> roles=(List<String>) User_VPP.get("roles");
-        return roles;
+        Map<String, Object> realmAccess= jwt.getClaim("realm_access");
+        List<String> realmRoles = (List<String>) realmAccess.get("roles");
+        return realmRoles;
+
     }
 
     public static Role getRole() throws RoleNotFoundException
@@ -41,14 +39,13 @@ public class Utils
         {
             throw new RoleNotFoundException();
         }
-        String role = roles.getFirst();
-        if(role.equals("Manufacturer"))
-        {
-            return Role.MANUFACTURER;
-        }
-        else if(role.equals("Customer"))
+        if(roles.contains("Customer"))
         {
             return Role.CUSTOMER;
+        }
+        else if(roles.contains("Manufacturer"))
+        {
+            return Role.MANUFACTURER;
         }
         else
         {
