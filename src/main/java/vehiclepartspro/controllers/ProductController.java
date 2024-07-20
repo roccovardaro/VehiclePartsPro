@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTORequestInsert;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTOResponse;
 import vehiclepartspro.services.product_service.ProductServiceC;
@@ -109,6 +110,20 @@ public class ProductController
         {
             return new ResponseEntity("GENERAL_ERROR",HttpStatus.BAD_REQUEST);
 
+        }
+    }
+
+    @PostMapping("/addImageProduct/{productId}")
+    public ResponseEntity addImageProduct(@PathVariable("productId") String productId, @RequestPart("productImage") MultipartFile file)
+    {
+        try
+        {
+            productServiceM.addImageProd(file,Integer.parseInt(productId));
+            return new ResponseEntity("Success", HttpStatus.OK);
+        }
+        catch (IOException e)
+        {
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 

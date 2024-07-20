@@ -3,6 +3,7 @@ package vehiclepartspro.services.product_service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import vehiclepartspro.entities.Car;
 import vehiclepartspro.entities.DTO.mapper.ProductMapper;
 import vehiclepartspro.entities.DTO.productDTO.ProductDTORequestInsert;
@@ -76,6 +77,14 @@ public class ProductServiceM
         //salva immagine
         //HandleFile.uploadFile(file,p_db.getId());
         return ProductMapper.convertToDTO(p_db);
+    }
+
+    public boolean addImageProd(MultipartFile file, int id) throws IOException
+    {
+
+        HandleFile.uploadFile(file,id);
+        return true;
+
     }
 
     @Transactional(readOnly = true)
