@@ -27,7 +27,14 @@ public class AccountingService
     private CustomerRepository customerRepository;
     @Autowired
     private ManufacturerRepository manufacturerRepository;
-    
+
+    public UserDTO getUserDetail(String email)
+    {
+        User user = userRepository.findByEmail(email);
+        UserDTO userDTO = UserMapper.convertEntityToDTO(user);
+        return userDTO;
+    }
+
     @Transactional(readOnly = false, rollbackFor = Exception.class)
     public UserDTO UserSave(UserDTO userDTO) throws MailUserExistsException, TelephoneNumberNotValidException, FirstNameNotValidException, LastNameNotValidException
     {

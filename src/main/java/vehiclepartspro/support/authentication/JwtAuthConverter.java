@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtGra
 import org.springframework.stereotype.Component;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -44,20 +45,21 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
         return jwt.getClaim(claimName);
     }
 
-    private Collection<? extends GrantedAuthority> extractResourceRoles(Jwt jwt){
-        Map<String, Object> resourceAccess = jwt.getClaim("resource_access");
-        Map<String, Object> resource;
-        Collection<String> resourceRoles;
+    private Collection<? extends GrantedAuthority> extractResourceRoles(Jwt jwt) {
+        Map<String, Object> realmAccess = jwt.getClaim("realm_access");
 
-        if(resourceAccess == null
-                || (resource = (Map<String, Object>) resourceAccess.get(jwtAuthConverterProperties.getResourceId())) == null
-                || (resourceRoles = (Collection<String>) resource.get("roles")) == null ){
-            return Set.of();
+        if (realmAccess == null) {
+            return Collections.emptySet();
         }
 
-        return resourceRoles.stream()
-                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
-                .collect(Collectors.toList());
+        Collection<String> realmRoles = (Collection<String>) realmAccess.get("roles");
 
+        if (realmRoles == null) {
+            return Collections.emptySet();
+        }
+
+        return realmRoles.stream()
+                .map(role -> new SimpleGrantedAuthority("ROLE_" + role))
+                .collect(Collectors.toSet());
     }
 }

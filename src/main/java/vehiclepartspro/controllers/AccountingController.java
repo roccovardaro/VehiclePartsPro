@@ -48,4 +48,21 @@ public class AccountingController
             return new ResponseEntity("GENERAL_ERROR", HttpStatus.BAD_REQUEST);
         }
     }
+
+
+    @GetMapping("/getUserDetails")
+    public ResponseEntity fetchUserDetails()
+    {
+        try
+        {
+            String email=Utils.getEmail();
+            UserDTO userDTO= accountingService.getUserDetail(email);
+            return new ResponseEntity(userDTO, HttpStatus.OK);
+        }
+        catch (Exception e)
+        {
+            return new ResponseEntity("GENERAL_ERROR", HttpStatus.BAD_REQUEST);
+        }
+
+    }
 }

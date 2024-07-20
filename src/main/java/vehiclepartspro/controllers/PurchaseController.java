@@ -53,7 +53,6 @@ public class PurchaseController
         try
         {
 
-
             String email = Utils.getEmail();
             List<PurchaseDTO> retDTO;
             if (fromDate == null || toDate == null) {

@@ -12,9 +12,10 @@ public class UserMapper
         UserDTO userDTO= new UserDTO();
         userDTO.setFirstName(user.getFirstName());
         userDTO.setLastName(user.getLastName());
-        userDTO.setTelephoneNumber(userDTO.getTelephoneNumber());
+        userDTO.setTelephoneNumber(user.getTelephoneNumber());
         userDTO.setEmail(user.getEmail());
-        userDTO.setAddress(userDTO.getAddress());
+        userDTO.setAddress(user.getAddress());
+        userDTO.setRole(user.getRole().toString());
         return userDTO;
     }
 
