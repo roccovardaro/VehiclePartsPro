@@ -58,8 +58,10 @@ public class PurchaseService
         //creo l'acquisto che va fatto e passo il purchase a ogni prodotto da acquistare (in questo acquisto)
         Purchase purchase = new Purchase();
         purchase.setBuyer(customer_db);
+        customer_db.getPurchases().add(purchase);
         purchase.setPurchaseTime(new Date());
         purchaseRepository.save(purchase);
+
 
         List<Product> products= ProductMapper.convertToEntity(productsDTO);
         double total_price=0;

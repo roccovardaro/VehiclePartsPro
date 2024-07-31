@@ -1,0 +1,6 @@
+
+AVVIARE KEYCLOAK
+./bin/kc.sh start-dev --http-port=8180
+
+AVVIARE MYSQL
+mysql.server start

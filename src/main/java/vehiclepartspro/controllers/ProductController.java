@@ -30,48 +30,6 @@ public class ProductController
     private ProductServiceM productServiceM;
 
 
-    /*@PostMapping(value = "/addProduct", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity addProduct(@RequestPart ProductDTORequestInsert productDTO,
-                                     @RequestPart("productImage")MultipartFile file)
-    {
-        try
-        {
-            String email= Utils.getEmail();
-            ProductDTOResponse productDTOResponse= productServiceM.addProduct(productDTO,email,file);
-            return new ResponseEntity(productDTOResponse, HttpStatus.OK);
-        }
-        catch (NotNegativeQuantityException e)
-        {
-            return new ResponseEntity("NOT_NEGATIVE_QUANTITY_EXCEPTION", HttpStatus.BAD_REQUEST);
-        }
-        catch (NotNegativePriceException e)
-        {
-            return new ResponseEntity("NOT_NEGATIVE_PRICE_EXCEPTION", HttpStatus.BAD_REQUEST);
-        }
-        catch (CarNotFoundException e)
-        {
-            return new ResponseEntity("CAR_NOT_FOUND_EXCEPTION", HttpStatus.BAD_REQUEST);
-        }
-        catch (ManufacturerNotFoundException e)
-        {
-            return new ResponseEntity("MANUFACTURER_NOT_FOUND_EXCEPTION", HttpStatus.BAD_REQUEST);
-        }
-        catch (NameProductNotValidException e)
-        {
-            return new ResponseEntity("NAME_PRODUCT_NOT_VALID_EXCEPTION", HttpStatus.BAD_REQUEST);
-            
-        }
-        catch (IdProductIllegalException e)
-        {
-           return new ResponseEntity("ID_PRODUCT_ILLEGAL_EXCEPTION",HttpStatus.FORBIDDEN);
-        }
-        catch (Exception e)
-        {
-            return new ResponseEntity("GENERAL_ERROR",HttpStatus.BAD_REQUEST);
-
-        }
-    }
-    */
     @PostMapping(value = "/addProduct")
     public ResponseEntity addProduct(@RequestBody ProductDTORequestInsert productDTO)
     {
