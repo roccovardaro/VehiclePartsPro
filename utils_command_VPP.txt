@@ -2,5 +2,8 @@
 AVVIARE KEYCLOAK
 ./bin/kc.sh start-dev --http-port=8180
 
+username_admin= rocco_pio_vardaro
+password_admin= Piorocco@1
+
 AVVIARE MYSQL
 mysql.server start
